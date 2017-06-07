@@ -1,0 +1,38 @@
+{
+    "ATTACHED_VOLUME_ID": "vol-0761689f30f86656f",
+    "SUBNET_ID": "subnet-73f7162b",
+    "REGION": "us-east-1",
+    "INSTANCE_TYPE_LIST": [
+        "t2.nano",
+        "t2.2xlarge",
+        "m4.large",
+        "m4.16xlarge",
+        "m3.medium",
+        "m3.2xlarge",
+        "c4.large",
+        "c4.8xlarge",
+        "c3.large",
+        "c3.8xlarge",
+        "p2.xlarge",
+        "p2.16xlarge",
+        "g2.2xlarge",
+        "g2.8xlarge",
+        "x1.16xlarge",
+        "x1.32xlarge",
+        "r4.large",
+        "r4.16xlarge",
+        "r3.large",
+        "r3.8xlarge",
+        "i3.large",
+        "i3.16xlarge",
+        "d2.xlarge",
+        "d2.8xlarge",
+        "f1.2xlarge",
+        "f1.16xlarge"
+    ],
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74beta-disk-fio-test/",
+    "IMAGE_ID": "ami-5bc4964d",
+    "SECURITY_GROUP_IDS": [
+        "sg-aef4fad0"
+    ]
+}
