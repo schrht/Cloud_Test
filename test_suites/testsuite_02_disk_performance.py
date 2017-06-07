@@ -107,11 +107,13 @@ def run_case(instance_name, logfile, vmsize, disktype, rw, bs, iodepth, tformat,
         $cmd >> $logfile 2>&1
     
         # Get the bandwidth and IOPS, then write down a summary
-        BW=`grep iops $logfile | awk -F', ' '{ split($2, parts1, "=") } { split(parts1[2], parts2, "K") } { print parts2[1] }'`
-        IOPS=`grep iops $logfile | awk -F', ' '{ split($3, parts3, "=") } { print parts3[2]}'`
+        #BW=`grep iops $logfile | awk -F', ' '{ split($2, parts1, "=") } { split(parts1[2], parts2, "K") } { print parts2[1] }'`
+        #IOPS=`grep iops $logfile | awk -F', ' '{ split($3, parts3, "=") } { print parts3[2]}'`
+        BW=`grep IOPS $logfile | cut -d= -f3 | cut -d" " -f1`
+        IOPS=`grep IOPS $logfile | cut -d= -f2 | cut -d, -f1`
         
         echo -e "\nTest Summary: \n----------\n" >> $logfile
-        printf "%-12s %-10s %-10s %-6s %-9s %-9s %-12s %-8s\n" VMSize DiskType I/OMode BS IODepth Format "BW(KB/s)" IOPS >> $logfile
+        printf "%-12s %-10s %-10s %-6s %-9s %-9s %-12s %-8s\n" VMSize DiskType I/OMode BS IODepth Format BandWidth IOPS >> $logfile
         printf "%-12s %-10s %-10s %-6s %-9s %-9s %-12s %-8s\n" $vmsize $disktype $rw $bs $iodepth $tformat $BW $IOPS >> $logfile
     
         #cat $logfile

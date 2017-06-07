@@ -164,7 +164,7 @@ TSCFG = load_tscfg()
 if __name__ == '__main__':
     
     print 'TSCFG = ', TSCFG
-    
+
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         pass#test(instance_type)
         
