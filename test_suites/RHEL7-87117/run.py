@@ -8,7 +8,7 @@ import os
 import json
 
 sys.path.append('../../')
-from cloud.ec2cli import create_instance
+from cloud.ec2cli import create_instance, get_instance_info_by_name
 from cloud.ec2cli import run_shell_command_on_instance
 from cloud.ec2cli import terminate_instance
 from cloud.ec2cli import upload_to_instance
@@ -33,8 +33,6 @@ def load_tscfg():
 
     
     if not os.path.exists(TSCFG_JSON_FILE):
-        default_tscfg = {}
-        default_tscfg['CASE_ID'] = 'RHEL7-87311'
         default_tscfg = {}
         default_tscfg['CASE_ID'] = ''
         default_tscfg['IMAGE_ID'] = ''
@@ -95,23 +93,43 @@ def collect_log_from_instance(instance_name):
     return
 
 
-def run_test(instance_name, vmsize=None):
+def run_test(instance_name, instance_type=None):
 
     # prepare
     print 'Preparing environment...'
-    prepare_on_instance(instance_name)
+    prepare_on_instance(instance_name+'-s')
+    prepare_on_instance(instance_name+'-c')
     
     # run test
     print 'Running test on instance...'
     
+    ## step 1: basic information
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                           instance_name=instance_name, 
+                                           instance_name=instance_name+'-c', 
                                            cmd_line='/bin/bash ~/workspace/bin/test.sh')
+    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+    
+    inst_id = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-c')['id']
+    log_file = TSCFG['LOG_SAVE_PATH'] + 'aws_check_' + instance_type + '.log'
+    os.system('aws ec2 describe-instances --instance-id {0} > {1}'.format(inst_id, log_file))
+    os.system('aws ec2 describe-instances --instance-id {0} --query \'Reservations[].Instances[].EnaSupport\' >> {1}'.format(inst_id, log_file))
+    
+    ## step 2: iperf test
+    result = run_shell_command_on_instance(region=TSCFG['REGION'], 
+                                           instance_name=instance_name+'-s', 
+                                           cmd_line='/bin/bash ~/workspace/bin/iperf_server.sh')
+    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+    
+    server_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-s')['private_ip_address']
+    
+    result = run_shell_command_on_instance(region=TSCFG['REGION'], 
+                                           instance_name=instance_name+'-c', 
+                                           cmd_line='/bin/bash ~/workspace/bin/iperf_client.sh {0}'.format(server_ip))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
     
     # get log
     print 'Getting log files...'
-    collect_log_from_instance(instance_name)
+    collect_log_from_instance(instance_name+'-c')
     
     return
 
@@ -122,8 +140,10 @@ def test(instance_type):
     instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + str(random.randint(10000000, 99999999))
 
     try:
-        create_instance(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
-                        image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
+        create_instance(region=TSCFG['REGION'], instance_name=instance_name+'-s', instance_type=instance_type, 
+                        image_id = TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
+        create_instance(region=TSCFG['REGION'], instance_name=instance_name+'-c', instance_type=instance_type, 
+                        image_id = TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
         
         print 'Waiting 2 minutes...'
         time.sleep(120)
@@ -137,7 +157,8 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
     
     finally:
-        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
+        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name+'-s', quick=False)
+        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name+'-c', quick=False)
 
     return
 
@@ -152,7 +173,7 @@ if __name__ == '__main__':
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         test(instance_type)
     
-    #run_test('cheshi-script-test')
+    #run_test('cheshi-script-test', 't2.micro')
         
     print 'Job finished!'
 
