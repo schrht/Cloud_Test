@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//cloud/ec2cli.py=utf-8
 encoding//test_suites/RHEL7-87117/run.py=utf-8
+encoding//test_suites/RHEL7-87119/run.py=utf-8
 encoding//test_suites/RHEL7-87311/run.py=utf-8
 encoding//test_suites/testsuite_01_resource_validation.py=utf-8
 encoding//test_suites/testsuite_02_disk_performance.py=utf-8

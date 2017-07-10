@@ -113,7 +113,7 @@ def run_test(instance_name, instance_type=None):
     log_file = TSCFG['LOG_SAVE_PATH'] + 'aws_check_' + instance_type + '.log'
     os.system('mkdir -p ' + TSCFG['LOG_SAVE_PATH'])
     os.system('aws ec2 describe-instances --instance-id {0} > {1}'.format(inst_id, log_file))
-    os.system('aws ec2 describe-instances --instance-id {0} --query \'Reservations[].Instances[].EnaSupport\' >> {1}'.format(inst_id, log_file))
+    os.system('aws ec2 describe-instance-attribute --instance-id {0} --attribute sriovNetSupport >> {1}'.format(inst_id, log_file))
     
     ## step 2: iperf test
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
