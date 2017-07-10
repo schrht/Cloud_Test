@@ -250,17 +250,55 @@ def get_file_from_instance(region = None, instance_name = None, src = None, dst 
     return None
 
 
+def download_from_instance(region = None, instance_name = None, src = None, dst = None):
+    '''Download files from EC2 instance, implemented by `scp`.'''
+
+    if region == None:
+        region = EC2CFG['DEFAULT_REGION']
+
+    # get the instance object related to instance name
+    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
+    
+    # download the file
+    #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
+    #os.system(keyscan_cmd)
+    download_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ec2-user@' + public_dns_name + ':' + src + ' ' + dst
+    os.system(download_cmd)
+
+    return None
+
+
+def upload_to_instance(region = None, instance_name = None, src = None, dst = None):
+    '''Upload files to EC2 instance, implemented by `scp`.'''
+
+    if region == None:
+        region = EC2CFG['DEFAULT_REGION']
+
+    # get the instance object related to instance name
+    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
+    
+    # download the file
+    #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
+    #os.system(keyscan_cmd)
+    upload_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ec2-user@' + public_dns_name + ':' + dst
+    os.system(upload_cmd)
+
+    return None
+
+
 
 # Load EC2 Configuration
 EC2CFG = load_ec2cfg()
 
 if __name__ == '__main__':
 
-    print EC2CFG
+    #print EC2CFG
+    
+    pass
 
     #create_instance(region='us-east-1', instance_name='cheshi-test-2', instance_type='t2.micro', image_id = 'ami-1fb1e109', subnet_id='subnet-73f7162b', security_group_ids=['sg-aef4fad0'])
     #print run_shell_command_on_instance(region='us-east-1', instance_name = 'cheshi-test-2', cmd_line = 'uname -r')
     #terminate_instance(region='us-east-1', instance_name='cheshi-test-2')
 
-
-
+    #download_from_instance(instance_name='cheshi-script-test', src='/home/ec2-user/*.txt', dst='/home/cheshi/temp')
+    #upload_to_instance(instance_name='cheshi-script-test', src='/home/cheshi/temp/*g', dst='/home/ec2-user')
