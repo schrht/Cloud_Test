@@ -34,7 +34,7 @@ def load_tscfg():
     
     if not os.path.exists(TSCFG_JSON_FILE):
         default_tscfg = {}
-        default_tscfg['CASE_ID'] = 'RHEL7-87311'
+        default_tscfg['CASE_ID'] = ''
         default_tscfg = {}
         default_tscfg['CASE_ID'] = ''
         default_tscfg['IMAGE_ID'] = ''

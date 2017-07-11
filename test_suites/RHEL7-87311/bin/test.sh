@@ -2,6 +2,9 @@
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
+# setup
+setup.sh
+
 inst_type=$(ec2-metadata -t | awk '{print $2}')
 time_stamp=$(date +%y%m%d%H%M%S)
 logfile=~/workspace/log/result_${inst_type}_${time_stamp}.log
@@ -16,6 +19,9 @@ cmd='sudo grep "^" /sys/block/*/queue/discard_max_bytes'
 
 echo "$ $cmd" >> $logfile
 eval $cmd >> $logfile 2>&1
+
+# teardown
+teardown.sh
 
 exit 0
 

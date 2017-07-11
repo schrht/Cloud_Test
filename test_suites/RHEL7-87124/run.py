@@ -106,9 +106,17 @@ def run_test(instance_name, instance_type=None):
     
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh')
+                                           cmd_line='/bin/bash ~/workspace/bin/test1.sh')
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
     
+    print 'Waiting 2 minutes for system rebooting...'
+    time.sleep(120)
+    
+    result = run_shell_command_on_instance(region=TSCFG['REGION'], 
+                                           instance_name=instance_name, 
+                                           cmd_line='/bin/bash ~/workspace/bin/test2.sh')
+    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+
     # get log
     print 'Getting log files...'
     collect_log_from_instance(instance_name)
@@ -153,7 +161,7 @@ if __name__ == '__main__':
         test(instance_type)
     
     #run_test('cheshi-script-test')
-    
+        
     print 'Job finished!'
 
     

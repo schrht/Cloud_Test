@@ -2,6 +2,9 @@
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
+# setup
+setup.sh
+
 inst_type=$(ec2-metadata -t | awk '{print $2}')
 time_stamp=$(date +%y%m%d%H%M%S)
 logfile=~/workspace/log/result_${inst_type}_${time_stamp}.log
@@ -21,6 +24,9 @@ function run_cmd(){
 
 run_cmd 'modinfo ena'
 run_cmd 'ethtool -i eth0'
+
+# teardown
+teardown.sh
 
 exit 0
 

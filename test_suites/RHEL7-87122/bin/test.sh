@@ -2,6 +2,9 @@
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
+# setup
+setup.sh
+
 inst_type=$(ec2-metadata -t | awk '{print $2}')
 time_stamp=$(date +%y%m%d%H%M%S)
 logfile=~/workspace/log/result_${inst_type}_${time_stamp}.log
@@ -24,7 +27,6 @@ run_cmd 'lsmod | grep nvme'
 
 rpm -q nvme-cli.x86_64 >/dev/null 2>&1
 if [ "$?" != "0" ]; then
-	sudo yum-config-manager --disable rhel7u4-debug >/dev/null 2>&1
 	sudo yum install -y nvme-cli.x86_64
 fi
 
@@ -35,6 +37,9 @@ for dev in $devlist; do
 	run_cmd "sudo nvme read --data=/dev/null --data-size=10000 --latency $dev"
 	run_cmd "sudo nvme write --data=/dev/zero --data-size=10000 --latency $dev"
 done
+
+# teardown
+teardown.sh
 
 exit 0
 

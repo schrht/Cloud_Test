@@ -17,6 +17,7 @@ function show(){
 
 show "Time" date
 show "Release" cat /etc/system-release
+show "" cat /proc/cmdline
 show "" systemd-analyze
 show "" uname -a
 show "" lsblk -p

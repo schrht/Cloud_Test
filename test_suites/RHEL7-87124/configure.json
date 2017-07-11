@@ -1,0 +1,24 @@
+{
+    "CASE_ID": "RHEL-87124",
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74-test-outputs/RHEL7-87124/",
+
+    "REGION": "ap-northeast-1",
+    "IMAGE_ID": "ami-010d1066",
+    "SUBNET_ID": "subnet-989a6bef",
+    "SECURITY_GROUP_IDS": [
+        "sg-010ffc67"
+    ],
+
+    "INSTANCE_TYPE_LIST": [
+	"c4.8xlarge",
+	"d2.8xlarge",
+	"i3.16xlarge",
+	"m4.10xlarge",
+	"m4.16xlarge",
+	"p2.16xlarge",
+	"r4.8xlarge",
+	"r4.16xlarge",
+	"x1.16xlarge",
+	"x1.32xlarge"
+    ]
+}
