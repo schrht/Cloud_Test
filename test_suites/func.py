@@ -39,22 +39,22 @@ def load_tscfg(data_file = './configure.json'):
         tscfg['CASE_ID'] = 'rhelx-00000'
 
     if not tscfg.has_key('LOG_SAVE_PATH'):
-        tscfg['LOG_SAVE_PATH'] = ''
+        tscfg['LOG_SAVE_PATH'] = '/tmp/'
         
     if not tscfg.has_key('REGION'):
-        tscfg['REGION'] = ''
+        tscfg['REGION'] = None
         
     if not tscfg.has_key('USER_NAME'):
         tscfg['USER_NAME'] = None
         
     if not tscfg.has_key('IMAGE_ID'):
-        tscfg['IMAGE_ID'] = ''
+        tscfg['IMAGE_ID'] = None
         
     if not tscfg.has_key('SUBNET_ID'):
-        tscfg['SUBNET_ID'] = ''
+        tscfg['SUBNET_ID'] = None
         
     if not tscfg.has_key('SECURITY_GROUP_IDS'):
-        tscfg['SECURITY_GROUP_IDS'] = ('',)
+        tscfg['SECURITY_GROUP_IDS'] = None
         
     if not tscfg.has_key('INSTANCE_TYPE_LIST'):
         tscfg['INSTANCE_TYPE_LIST'] = ('t2.micro',)

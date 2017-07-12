@@ -75,21 +75,7 @@ def run_test(instance_name, instance_type=None):
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
                                            user_name=TSCFG['USER_NAME'], 
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh create')
-    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
-    
-    result = run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                           instance_name=instance_name, 
-                                           user_name=TSCFG['USER_NAME'], 
-                                           cmd_line='sudo reboot&')
-    
-    print 'Waiting 2 minutes for system rebooting...'
-    time.sleep(120)
-    
-    result = run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                           instance_name=instance_name, 
-                                           user_name=TSCFG['USER_NAME'], 
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh reboot')
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh')
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
     
     # get log
