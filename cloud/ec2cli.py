@@ -39,7 +39,7 @@ def load_ec2cfg():
         default_ec2cfg['PEM'] = {}
         default_ec2cfg['PEM']['ap-northeast-1'] = '/home/cheshi/.pem/ap-northeast-1-cheshi.pem'
         default_ec2cfg['PEM']['ap-us-east-1'] = '/home/cheshi/.pem/ap-us-east-1-cheshi.pem'
-        default_ec2cfg['DEFAULT_USER_NAME'] = 'ec2_user'
+        default_ec2cfg['DEFAULT_USER_NAME'] = 'ec2-user'
     
         os.mknod(EC2CFG_JSON_FILE)
         with open(EC2CFG_JSON_FILE, 'w') as json_file:
