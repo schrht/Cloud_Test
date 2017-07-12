@@ -18,16 +18,16 @@ def load_ec2cfg():
     
     EC2CFG_JSON_FILE = '/home/cheshi/.ec2cfg.json'
     
-    def byteify(input):
+    def byteify(inputs):
         '''Convert unicode to string for JSON.loads'''
-        if isinstance(input, dict):
-            return {byteify(key):byteify(value) for key,value in input.iteritems()}
-        elif isinstance(input, list):
-            return [byteify(element) for element in input]
-        elif isinstance(input, unicode):
-            return input.encode('utf-8')
+        if isinstance(inputs, dict):
+            return {byteify(key):byteify(value) for key,value in inputs.iteritems()}
+        elif isinstance(inputs, list):
+            return [byteify(element) for element in inputs]
+        elif isinstance(inputs, unicode):
+            return inputs.encode('utf-8')
         else:
-            return input
+            return inputs
 
     
     if not os.path.exists(EC2CFG_JSON_FILE):
@@ -39,6 +39,7 @@ def load_ec2cfg():
         default_ec2cfg['PEM'] = {}
         default_ec2cfg['PEM']['ap-northeast-1'] = '/home/cheshi/.pem/ap-northeast-1-cheshi.pem'
         default_ec2cfg['PEM']['ap-us-east-1'] = '/home/cheshi/.pem/ap-us-east-1-cheshi.pem'
+        default_ec2cfg['DEFAULT_USER_NAME'] = 'ec2_user'
     
         os.mknod(EC2CFG_JSON_FILE)
         with open(EC2CFG_JSON_FILE, 'w') as json_file:
@@ -56,7 +57,7 @@ def get_connection(region = None):
     
     conn = None
     
-    if region == None:
+    if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
     
     if isinstance(region, str):
@@ -206,11 +207,13 @@ def attach_volume_to_instance(region = None, instance_name = None, volume_id = N
         instance.modify_attribute('blockDeviceMapping', {volume_device: True})
     
     
-def run_shell_command_on_instance(region = None, instance_name = None, cmd_line = None):
+def run_shell_command_on_instance(region = None, instance_name = None, cmd_line = None, user_name = None):
     '''Run shell command on EC2 instance.'''
 
-    if region == None:
+    if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
+    if user_name is None or region == '':
+        user_name = EC2CFG['DEFAULT_USER_NAME']
         
     # connect to region    
     conn = get_connection(region)
@@ -220,7 +223,7 @@ def run_shell_command_on_instance(region = None, instance_name = None, cmd_line 
     instance = reservation.instances[0]
 
     # create an SSH client for this instance
-    ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name='ec2-user')
+    ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name=user_name)
     
     # run the command and get the results
     status, stdout, stderr = ssh_client.run(cmd_line)
@@ -228,11 +231,13 @@ def run_shell_command_on_instance(region = None, instance_name = None, cmd_line 
     return (status, stdout, stderr)
 
 
-def get_file_from_instance(region = None, instance_name = None, src = None, dst = True):
+def get_file_from_instance(region = None, instance_name = None, src = None, dst = True, user_name = None):
     '''Download file from EC2 instance.'''
 
-    if region == None:
+    if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
+    if user_name is None or region == '':
+        user_name = EC2CFG['DEFAULT_USER_NAME']
 
     # connect to region
     conn = get_connection(region)
@@ -242,7 +247,7 @@ def get_file_from_instance(region = None, instance_name = None, src = None, dst 
     instance = reservation.instances[0]
 
     # create an SSH client for this instance
-    ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name='ec2-user')
+    ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name=user_name)
     
     # get file from instance
     ssh_client.get_file(src, dst)
@@ -250,11 +255,13 @@ def get_file_from_instance(region = None, instance_name = None, src = None, dst 
     return None
 
 
-def download_from_instance(region = None, instance_name = None, src = None, dst = None):
+def download_from_instance(region = None, instance_name = None, src = None, dst = None, user_name = None):
     '''Download files from EC2 instance, implemented by `scp`.'''
 
-    if region == None:
+    if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
+    if user_name is None or region == '':
+        user_name = EC2CFG['DEFAULT_USER_NAME']
 
     # get the instance object related to instance name
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
@@ -262,17 +269,19 @@ def download_from_instance(region = None, instance_name = None, src = None, dst 
     # download the file
     #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
     #os.system(keyscan_cmd)
-    download_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ec2-user@' + public_dns_name + ':' + src + ' ' + dst
+    download_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + user_name + '@' + public_dns_name + ':' + src + ' ' + dst
     os.system(download_cmd)
 
     return None
 
 
-def upload_to_instance(region = None, instance_name = None, src = None, dst = None):
+def upload_to_instance(region = None, instance_name = None, src = None, dst = None, user_name = None):
     '''Upload files to EC2 instance, implemented by `scp`.'''
 
-    if region == None:
+    if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
+    if user_name is None or region == '':
+        user_name = EC2CFG['DEFAULT_USER_NAME']
 
     # get the instance object related to instance name
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
@@ -280,7 +289,7 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     # download the file
     #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
     #os.system(keyscan_cmd)
-    upload_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ec2-user@' + public_dns_name + ':' + dst
+    upload_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ' + user_name + '@' + public_dns_name + ':' + dst
     os.system(upload_cmd)
 
     return None
@@ -293,7 +302,6 @@ EC2CFG = load_ec2cfg()
 if __name__ == '__main__':
 
     #print EC2CFG
-    
     pass
 
     #create_instance(region='us-east-1', instance_name='cheshi-test-2', instance_type='t2.micro', image_id = 'ami-1fb1e109', subnet_id='subnet-73f7162b', security_group_ids=['sg-aef4fad0'])

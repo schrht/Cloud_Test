@@ -15,11 +15,19 @@ function show(){
 	$@ 2>&1
 } 
 
+
 show "Time" date
-show "Release" cat /etc/system-release
+
+if [ "$(os_type.sh)" = "redhat" ]; then
+	show "Release" cat /etc/system-release
+else
+	show "Release" cat /etc/issue
+fi
+
+show "" uname -a
 show "" cat /proc/cmdline
 show "" systemd-analyze
-show "" uname -a
+
 show "" lsblk -p
 show "" ifconfig -a
 show "EC2-Metadata" ec2-metadata

@@ -9,7 +9,9 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 # yum repos or deal with something based on the image.
 
 # Common Configuration & Setup
-sudo yum-config-manager --disable rhel7u4-debug >/dev/null 2>&1
+if [ "$(os_type.sh)" = "redhat" ]; then
+	sudo yum-config-manager --disable rhel7u4-debug >/dev/null 2>&1
+fi
 
 exit 0
 
