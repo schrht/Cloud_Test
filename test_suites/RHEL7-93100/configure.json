@@ -21,10 +21,10 @@
         "p2.16xlarge",
         "r4.16xlarge",
         "r3.8xlarge",
+        "x1.16xlarge",
+        "x1.32xlarge",
         "d2.8xlarge",
         "i2.8xlarge",
-        "i3.16xlarge",
-        "x1.16xlarge",
-        "x1.32xlarge"
+        "i3.16xlarge"
     ]
 }

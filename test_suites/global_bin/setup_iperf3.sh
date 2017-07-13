@@ -10,5 +10,7 @@ if [ "$(os_type.sh)" = "redhat" ]; then
 else
 	sudo apt install -y iperf3
 	dpkg -s iperf3
+fi
+
 exit 0
 
