@@ -263,14 +263,14 @@ def download_from_instance(region = None, instance_name = None, src = None, dst 
     if user_name is None or region == '':
         user_name = EC2CFG['DEFAULT_USER_NAME']
 
-    # get the instance object related to instance name
+    # get public_dns_name related to instance name
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
     # download the file
-    #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
-    #os.system(keyscan_cmd)
-    download_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + user_name + '@' + public_dns_name + ':' + src + ' ' + dst
-    os.system(download_cmd)
+    cmd = 'ssh-keygen -q -R ' + public_dns_name
+    os.system(cmd)
+    cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + user_name + '@' + public_dns_name + ':' + src + ' ' + dst
+    os.system(cmd)
 
     return None
 
@@ -283,14 +283,14 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     if user_name is None or region == '':
         user_name = EC2CFG['DEFAULT_USER_NAME']
 
-    # get the instance object related to instance name
+    # get public_dns_name related to instance name
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
-    # download the file
-    #keyscan_cmd = 'ssh-keyscan ' + public_dns_name + ' >> ~/.ssh/known_hosts'
-    #os.system(keyscan_cmd)
-    upload_cmd = 'scp -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ' + user_name + '@' + public_dns_name + ':' + dst
-    os.system(upload_cmd)
+    # upload the file
+    cmd = 'ssh-keygen -q -R ' + public_dns_name
+    os.system(cmd)
+    cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ' + user_name + '@' + public_dns_name + ':' + dst
+    os.system(cmd)
 
     return None
 
