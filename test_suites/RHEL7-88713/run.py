@@ -135,11 +135,11 @@ if __name__ == '__main__':
     
     print 'TSCFG = ', TSCFG
 
-    #for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
-    #    test(instance_type)
+    for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
+        test(instance_type)
     
     #test('t2.micro')
-    run_test('rhel-88713-t2.micro-92556253')
+    #run_test('rhel-88713-t2.micro-92556253')
     
     
     print 'Job finished!'
