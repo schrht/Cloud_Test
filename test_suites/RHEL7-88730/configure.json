@@ -1,0 +1,32 @@
+{
+    "CASE_ID": "RHEL-88730",
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74-test-outputs/RHEL7-88730/",
+
+    "REGION": "ap-northeast-1",
+    "USER_NAME": "ec2-user",
+
+    "IMAGE_ID": "ami-010d1066",
+    "SUBNET_ID": "subnet-989a6bef",
+    "SECURITY_GROUP_IDS": [
+        "sg-010ffc67"
+    ],
+
+    "ATTACHED_VOLUME_ID": "vol-0c5782e78e331223e",
+
+    "INSTANCE_TYPE_LIST": [
+	"t2.2xlarge",
+	"m4.16xlarge",
+	"m3.2xlarge",
+	"c4.8xlarge",
+	"c3.8xlarge",
+	"g2.8xlarge",
+	"p2.16xlarge",
+	"r4.16xlarge",
+	"r3.8xlarge",
+	"x1.16xlarge",
+	"x1.32xlarge",
+	"d2.8xlarge",
+	"i2.8xlarge",
+	"i3.16xlarge"
+    ]
+}

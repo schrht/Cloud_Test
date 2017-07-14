@@ -7,7 +7,7 @@ setup.sh
 
 inst_type=$(ec2-metadata -t | awk '{print $2}')
 time_stamp=$(date +%y%m%d%H%M%S)
-logfile=~/workspace/log/resource_validation_${inst_type}_${time_stamp}.log
+logfile=~/workspace/log/storage_performance_${inst_type}_${time_stamp}.log
 
 # log the informaiton
 show_info.sh >> $logfile 2>&1
@@ -22,11 +22,15 @@ function run_cmd(){
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
-run_cmd 'lscpu'
-run_cmd 'free -k'
+run_cmd 'setup_fio.sh'
 
-run_cmd 'cat /proc/cpuinfo'
-run_cmd 'cat /proc/meminfo'
+run_cmd 'lsblk -d'
+run_cmd 'lsblk -t'
+
+## fio.sh $log $disktype $rw $bs $iodepth
+run_cmd 'fio.sh $logfile GP2 read 4k 1'
+run_cmd 'fio.sh $logfile GP2 write 4k 1'
+
 
 # teardown
 teardown.sh

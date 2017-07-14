@@ -12,6 +12,8 @@ from cloud.ec2cli import run_shell_command_on_instance
 from cloud.ec2cli import terminate_instance
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
+from cloud.ec2cli import attach_volume_to_instance
+from cloud.ec2cli import detach_volume_from_instance
 
 from test_suites.func import load_tscfg
 
@@ -70,13 +72,20 @@ def run_test(instance_name, instance_type=None):
     prepare_on_instance(instance_name)
     
     # run test
-    print 'Running test on instance...'
-    
+    print 'Attaching test volume...'
+    attach_volume_to_instance(region=TSCFG['REGION'], instance_name=instance_name,
+                              volume_id=TSCFG['ATTACHED_VOLUME_ID'], volume_delete_on_termination=False)
+            
+    print 'Running test on instance...'        
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
                                            user_name=TSCFG['USER_NAME'], 
                                            cmd_line='/bin/bash ~/workspace/bin/test.sh')
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+    
+    print 'Detaching test volume...'
+    detach_volume_from_instance(region=TSCFG['REGION'], instance_name=instance_name,
+                              volume_id=TSCFG['ATTACHED_VOLUME_ID'])
     
     # get log
     print 'Getting log files...'
@@ -118,10 +127,10 @@ if __name__ == '__main__':
     
     print 'TSCFG = ', TSCFG
 
-    for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
-        test(instance_type)
+    #for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
+    #    test(instance_type)
     
-    #run_test('cheshi-script-test')
+    run_test('cheshi-script-test')
     
     print 'Job finished!'
 

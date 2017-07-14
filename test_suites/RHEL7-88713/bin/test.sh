@@ -32,7 +32,6 @@ function run_cmd(){
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
-
 run_cmd 'setup_iperf3.sh'
 
 run_cmd 'ethtool -i eth0'

@@ -20,12 +20,12 @@ logfile=$1
 # Set Command
 cmd="sudo /usr/bin/iperf3 -c $server_ip -l $len -P $pc -f m"
 
-# Run network test
+# Run test
 echo -e "\nTest Run: \n----------\n" >> $tlog
 echo -e "\n$ $cmd" >> $tlog
 eval $cmd >> $tlog 2>&1
 
-# Get the BW and IOPS
+# Get the BW
 BWtx=`grep "sender" $tlog | tail -1 | cut -d] -f2 | awk '{print $5}'`
 BWrx=`grep "receiver" $tlog | tail -1 | cut -d] -f2 | awk '{print $5}'`
 
@@ -34,6 +34,7 @@ echo -e "\nTest Summary: \n----------\n" >> $tlog
 printf "** %-12s %-10s %-6s %-7s %-10s %-10s\n" VMSize Interface Buffer PClient "BWtx(Mb/s)" "BWrx(Mb/s)" >> $tlog
 printf "** %-12s %-10s %-6s %-7s %-10s %-10s\n" $vmsize $iface $len $pc $BWtx $BWrx >> $tlog
 
+# Save log
 cat $tlog >> $logfile && rm $tlog
 
 exit 0

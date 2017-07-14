@@ -10,7 +10,17 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # Common Configuration & Setup
 if [ "$(os_type.sh)" = "redhat" ]; then
-	sudo yum-config-manager --disable rhel7u4-debug >/dev/null 2>&1
+
+	# disable unavailable repo
+	echo "disable unavailable repo rhel7u4-debug"
+	sudo yum-config-manager --disable rhel7u4-debug
+
+	# downgrade rdma-core from 13-7 to 13-5
+	rpm -q rdma-core | grep rdma-core-13-7 >/dev/null 2>&1
+	if [ "$?" = "0" ]; then
+		echo "downgrade rdma-core from 13-7 to 13-5"
+		sudo yum downgrade -y rdma-core-13-5.el7.x86_64
+	fi
 fi
 
 exit 0
