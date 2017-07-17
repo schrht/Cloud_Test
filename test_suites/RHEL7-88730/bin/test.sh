@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Discription:
+# $1: disk type
+
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # setup
@@ -27,10 +30,22 @@ run_cmd 'setup_fio.sh'
 run_cmd 'lsblk -d'
 run_cmd 'lsblk -t'
 
+if [ "$1" != "" ]; then
+	disktype=$1
+else
+	disktype=unknown
+fi
 ## fio.sh $log $disktype $rw $bs $iodepth
-run_cmd 'fio.sh $logfile GP2 read 4k 1'
-run_cmd 'fio.sh $logfile GP2 write 4k 1'
-
+fio.sh $logfile $disktype read 1k 1
+fio.sh $logfile $disktype read 4k 1
+fio.sh $logfile $disktype read 256k 1
+fio.sh $logfile $disktype write 1k 1
+fio.sh $logfile $disktype write 4k 1
+fio.sh $logfile $disktype write 256k 1
+fio.sh $logfile $disktype randread 1k 1
+fio.sh $logfile $disktype randread 256k 1
+fio.sh $logfile $disktype randwrite 1k 1
+fio.sh $logfile $disktype randwrite 256k 1
 
 # teardown
 teardown.sh

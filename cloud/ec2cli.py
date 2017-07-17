@@ -189,7 +189,7 @@ def get_instance_info_by_name(region = None, instance_name = None):
     return instance.__dict__.copy()
 
 
-def attach_volume_to_instance(region = None, instance_name = None, volume_id = None, volume_delete_on_termination = True):
+def attach_volume_to_instance(region = None, instance_name = None, volume_id = None, volume_delete_on_termination = True, quick = False):
     '''Attach volume to an existing EC2 instance.'''
     
     # connect to region    
@@ -205,6 +205,40 @@ def attach_volume_to_instance(region = None, instance_name = None, volume_id = N
     conn.attach_volume(volume_id, instance.id, volume_device)
     if volume_delete_on_termination:
         instance.modify_attribute('blockDeviceMapping', {volume_device: True})
+    
+    if not quick:
+        state = ''
+        while state != u'attached':
+            time.sleep(5)
+            state = conn.get_all_volumes(volume_ids=volume_id)[0].attachment_state()
+            print "Attachment state: %s" % (state)
+            
+    return
+    
+    
+def detach_volume_from_instance(region = None, instance_name = None, volume_id = None, force = False, quick = False):
+    '''Detach volume from an existing EC2 instance.'''
+    
+    # connect to region
+    conn = get_connection(region)
+
+    # get instance
+    reservation = conn.get_all_instances(filters={"tag:Name": "%s" % instance_name})[0]
+    instance = reservation.instances[0]
+    
+    volume_device = EC2CFG['SECONDARY_VOLUME_DEVICE']
+
+    print "Detaching volume: %s from instance: %s as device: %s" % (volume_id, instance.id, volume_device)
+    conn.detach_volume(volume_id, instance.id, volume_device, force)
+    
+    if not quick:
+        state = ''
+        while state != u'available':
+            time.sleep(5)
+            state = conn.get_all_volumes(volume_ids=volume_id)[0].volume_state()
+            print "Volume state: %s" % (state)
+            
+    return
     
     
 def run_shell_command_on_instance(region = None, instance_name = None, cmd_line = None, user_name = None):
@@ -267,7 +301,7 @@ def download_from_instance(region = None, instance_name = None, src = None, dst 
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
     # download the file
-    cmd = 'ssh-keygen -q -R ' + public_dns_name
+    cmd = 'ssh-keygen -q -R ' + public_dns_name + ' >/dev/null 2>&1'
     os.system(cmd)
     cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + user_name + '@' + public_dns_name + ':' + src + ' ' + dst
     os.system(cmd)
@@ -287,7 +321,7 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
     # upload the file
-    cmd = 'ssh-keygen -q -R ' + public_dns_name
+    cmd = 'ssh-keygen -q -R ' + public_dns_name + ' >/dev/null 2>&1'
     os.system(cmd)
     cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ' + user_name + '@' + public_dns_name + ':' + dst
     os.system(cmd)

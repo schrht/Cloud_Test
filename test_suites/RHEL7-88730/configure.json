@@ -12,21 +12,14 @@
     ],
 
     "ATTACHED_VOLUME_ID": "vol-0c5782e78e331223e",
+    "ATTACHED_VOLUME_IDS": [
+	    "vol-06ab963fbe9ee7092;gp2",
+	    "vol-0916e426b6def9d26;io1",
+	    "vol-0b917081497b4a856;sc1",
+	    "vol-0c5782e78e331223e;st1"
+    ],
 
     "INSTANCE_TYPE_LIST": [
-	"t2.2xlarge",
-	"m4.16xlarge",
-	"m3.2xlarge",
-	"c4.8xlarge",
-	"c3.8xlarge",
-	"g2.8xlarge",
-	"p2.16xlarge",
-	"r4.16xlarge",
-	"r3.8xlarge",
-	"x1.16xlarge",
-	"x1.32xlarge",
-	"d2.8xlarge",
-	"i2.8xlarge",
-	"i3.16xlarge"
+	"r3.8xlarge"
     ]
 }

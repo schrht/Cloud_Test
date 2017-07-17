@@ -18,7 +18,7 @@ if [ "$(os_type.sh)" = "redhat" ]; then
 	wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-10.noarch.rpm
 	sudo rpm -ivh epel-release-7-10.noarch.rpm
 
-	sudo yum install -y fio
+	sudo yum install -y fio --enablerepo=epel
 else
 	sudo apt install -y git gcc libaio-devel
 
