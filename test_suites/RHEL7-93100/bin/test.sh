@@ -28,6 +28,18 @@ run_cmd 'sudo systemd-analyze blame'
 run_cmd 'sudo systemd-analyze critical-chain'
 run_cmd 'sudo systemd-analyze dot'
 
+# Get Performance KPI
+# Startup finished in 1.890s (kernel) + 950ms (initrd) + 3.456s (userspace) = 6.296s
+kernel=$(grep "Startup finished in" $logfile | head -1 | awk '{print $4}')
+initrd=$(grep "Startup finished in" $logfile | head -1 | awk '{print $7}')
+userspace=$(grep "Startup finished in" $logfile | head -1 | awk '{print $10}')
+total=$(grep "Startup finished in" $logfile | head -1 | awk '{print $13}')
+
+# Write down a summary
+echo -e "\nTest Summary: \n----------\n" >> $logfile
+printf "** %-12s %-10s %-10s %-10s %-10s\n" VMSize Kernel Initrd Userspace Total >> $logfile
+printf "** %-12s %-10s %-10s %-10s %-10s\n" ${inst_type} $kernel $initrd $userspace $total >> $logfile
+
 # teardown
 teardown.sh
 
