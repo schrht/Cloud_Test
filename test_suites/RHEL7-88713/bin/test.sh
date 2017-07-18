@@ -34,9 +34,10 @@ echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
 run_cmd 'setup_iperf3.sh'
 
+run_cmd 'sudo ifconfig eth0 mtu 9000'	# adjust MTU
+
 run_cmd 'ethtool -i eth0'
 run_cmd 'ethtool -k eth0'
-run_cmd 'sudo ifconfig eth0 mtu 9000'
 
 if [ "$1" = "" ]; then
 	# server side
