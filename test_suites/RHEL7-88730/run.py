@@ -134,7 +134,7 @@ if __name__ == '__main__':
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         test(instance_type)
     
-    #run_test('cheshi-script-test')
+    #run_test('cheshi-storage-test')
     
     print 'Job finished!'
 

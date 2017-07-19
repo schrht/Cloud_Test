@@ -29,6 +29,7 @@ run_cmd 'setup_fio.sh'
 
 run_cmd 'lsblk -d'
 run_cmd 'lsblk -t'
+run_cmd 'sudo blockdev --report'
 
 if [ "$1" != "" ]; then
 	disktype=$1
