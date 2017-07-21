@@ -101,7 +101,7 @@ def run_test(instance_name, instance_type=None):
             volume_size = 16 * 1024
 
         # create the volume
-        volume = create_volume(volume_type = volume_type, volume_size = 522, iops = None)
+        volume = create_volume(volume_type = volume_type, volume_size = 522, iops = iops)
         
         # wait a second for the volume to become available
         time.sleep(20)
