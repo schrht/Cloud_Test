@@ -14,6 +14,8 @@ from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
 from cloud.ec2cli import attach_volume_to_instance
 from cloud.ec2cli import detach_volume_from_instance
+from cloud.ec2cli import create_volume
+from cloud.ec2cli import delete_volume
 
 from test_suites.func import load_tscfg
 
@@ -72,14 +74,44 @@ def run_test(instance_name, instance_type=None):
     prepare_on_instance(instance_name)
     
     # run test
-    for volume in TSCFG['ATTACHED_VOLUME_IDS']:
-        volume_id = volume.split(';')[0]
-        volume_type = volume.split(';')[1]
-    
+#    for volume in TSCFG['ATTACHED_VOLUME_IDS']:
+#        volume_id = volume.split(';')[0]
+#        volume_type = volume.split(';')[1]
+
+
+    for volume_type in ('gp2', 'io1', 'st1', 'sc1'):
+
+        iops = None
+        
+        if volume_type == 'gp2':
+            # define gp2 volume
+            volume_size = 3334
+
+        if volume_type == 'io1':
+            # define io1 volume
+            volume_size = 400
+            iops = 20000
+            
+        if volume_type == 'st1':
+            # define st1 volume
+            volume_size = 12.5 * 1024
+
+        if volume_type == 'sc1':
+            # define sc1 volume
+            volume_size = 16 * 1024
+
+        # create the volume
+        volume = create_volume(volume_type = volume_type, volume_size = 522, iops = None)
+        
+        # wait a second for the volume to become available
+        time.sleep(20)
+        
+        # attach the volume
         print 'Attaching test volume...'
         attach_volume_to_instance(region=TSCFG['REGION'], instance_name=instance_name,
-                                  volume_id=volume_id, volume_delete_on_termination=False)
-                
+                                  volume_id=volume.id, volume_delete_on_termination=True)
+        
+        # test the volume
         print 'Running test on instance...'        
         result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                                instance_name=instance_name, 
@@ -87,9 +119,13 @@ def run_test(instance_name, instance_type=None):
                                                cmd_line='/bin/bash ~/workspace/bin/test.sh ' + volume_type)
         #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
         
+        # detach the volume
         print 'Detaching test volume...'
         detach_volume_from_instance(region=TSCFG['REGION'], instance_name=instance_name,
-                                  volume_id=volume_id, force=True)
+                                  volume_id=volume.id, force=True)
+        
+        # delete the volume
+        delete_volume(volume_id=volume.id)
     
     # get log
     print 'Getting log files...'

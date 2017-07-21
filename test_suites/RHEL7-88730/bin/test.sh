@@ -37,16 +37,22 @@ else
 	disktype=unknown
 fi
 ## fio.sh $log $disktype $rw $bs $iodepth
-fio.sh $logfile $disktype read 1k 1
 fio.sh $logfile $disktype read 4k 1
 fio.sh $logfile $disktype read 256k 1
-fio.sh $logfile $disktype write 1k 1
+fio.sh $logfile $disktype read 1024k 1
+fio.sh $logfile $disktype read 2048k 1
 fio.sh $logfile $disktype write 4k 1
 fio.sh $logfile $disktype write 256k 1
-fio.sh $logfile $disktype randread 1k 1
+fio.sh $logfile $disktype write 1024k 1
+fio.sh $logfile $disktype write 2024k 1
+fio.sh $logfile $disktype randread 4k 1
 fio.sh $logfile $disktype randread 256k 1
-fio.sh $logfile $disktype randwrite 1k 1
+fio.sh $logfile $disktype randread 1024k 1
+fio.sh $logfile $disktype randread 2048k 1
+fio.sh $logfile $disktype randwrite 4k 1
 fio.sh $logfile $disktype randwrite 256k 1
+fio.sh $logfile $disktype randwrite 1024k 1
+fio.sh $logfile $disktype randwrite 2024k 1
 
 # teardown
 teardown.sh

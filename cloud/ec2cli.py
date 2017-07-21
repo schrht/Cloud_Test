@@ -329,6 +329,36 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     return None
 
 
+def create_volume(region = None, availability_zone = None, volume_type = None, volume_size = None, iops = None):
+    
+    # set default values
+    if region is None or region == '': region = EC2CFG['DEFAULT_REGION']
+    if availability_zone is None or region == '': availability_zone = region + 'a'
+
+    # connect to region
+    conn = get_connection(region)
+        
+    # create volume and tags
+    volume = conn.create_volume(size = volume_size, zone = availability_zone, volume_type = volume_type, iops = iops)
+    
+    conn.create_tags(volume.id, {"Name": 'cheshi-volume-autotest'})
+    
+    return volume
+    
+    
+def delete_volume(region = None, volume_id = None):
+    
+    # set default values
+    if region is None or region == '': region = EC2CFG['DEFAULT_REGION']
+
+    # connect to region
+    conn = get_connection(region)
+    
+    # delete volume
+    result = conn.delete_volume(volume_id)
+    
+    return result
+
 
 # Load EC2 Configuration
 EC2CFG = load_ec2cfg()
