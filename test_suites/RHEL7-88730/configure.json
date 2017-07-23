@@ -20,6 +20,6 @@
     ],
 
     "INSTANCE_TYPE_LIST": [
-	"r3.8xlarge"
+	"m4.16xlarge"
     ]
 }
