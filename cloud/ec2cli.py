@@ -301,9 +301,10 @@ def download_from_instance(region = None, instance_name = None, src = None, dst 
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
     # download the file
-    cmd = 'ssh-keygen -q -R ' + public_dns_name + ' >/dev/null 2>&1'
+    cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
     os.system(cmd)
-    cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + user_name + '@' + public_dns_name + ':' + src + ' ' + dst
+    
+    cmd = 'scp -o StrictHostKeyChecking=no -r -i {0} {1}@{2}:{3} {4}'.format(EC2CFG['PEM'][region], user_name, public_dns_name, src, dst)
     os.system(cmd)
 
     return None
@@ -321,9 +322,10 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
     
     # upload the file
-    cmd = 'ssh-keygen -q -R ' + public_dns_name + ' >/dev/null 2>&1'
+    cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
     os.system(cmd)
-    cmd = 'scp -o StrictHostKeyChecking=no -r -i ' + EC2CFG['PEM'][region] + ' ' + src + ' ' + user_name + '@' + public_dns_name + ':' + dst
+    
+    cmd = 'scp -o StrictHostKeyChecking=no -r -i {0} {1} {2}@{3}:{4}'.format(EC2CFG['PEM'][region], src, user_name, public_dns_name, dst)
     os.system(cmd)
 
     return None
@@ -335,11 +337,23 @@ def create_volume(region = None, availability_zone = None, volume_type = None, v
     if region is None or region == '': region = EC2CFG['DEFAULT_REGION']
     if availability_zone is None or region == '': availability_zone = region + 'a'
 
+    # volume_size must be an integer
+    if not isinstance(volume_size, int):
+        try:
+            converted_value = int(volume_size)
+        except:
+            print 'Error: volume_size must be an integer, and your provision "{0}" can not be converted. Return None.'.format(volume_size)
+            return None
+        else:
+            print 'Warning: the volume_size you provisioned "{0}" has been converted as integer "{1}".'.format(volume_size, converted_value)
+            volume_size = converted_value
+            
     # connect to region
     conn = get_connection(region)
-        
+    
     # create volume and tags
-    volume = conn.create_volume(size = volume_size, zone = availability_zone, volume_type = volume_type, iops = iops)
+    volume = conn.create_volume(size = int(volume_size), zone = availability_zone, 
+                                volume_type = volume_type, iops = iops)
     
     conn.create_tags(volume.id, {"Name": 'cheshi-volume-autotest'})
     
