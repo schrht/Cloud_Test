@@ -8,9 +8,15 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 # setup
 setup.sh
 
+if [ "$1" != "" ]; then
+	disktype=$1
+else
+	disktype=unknown
+fi
+
 inst_type=$(ec2-metadata -t | awk '{print $2}')
 time_stamp=$(date +%y%m%d%H%M%S)
-logfile=~/workspace/log/storage_performance_${inst_type}_${time_stamp}.log
+logfile=~/workspace/log/storage_performance_${inst_type}_${disktype}_${time_stamp}.log
 
 # log the informaiton
 show_info.sh >> $logfile 2>&1
@@ -31,28 +37,51 @@ run_cmd 'lsblk -d'
 run_cmd 'lsblk -t'
 run_cmd 'sudo blockdev --report'
 
-if [ "$1" != "" ]; then
-	disktype=$1
-else
-	disktype=unknown
+mode=capacity_test
+
+# blind test for all parameters
+if [ "$mode" = "blind_test" ]; then
+	## fio.sh $log $disktype $rw $bs $iodepth
+	fio.sh $logfile $disktype read 4k 1
+	fio.sh $logfile $disktype read 16k 1
+	fio.sh $logfile $disktype read 256k 1
+	fio.sh $logfile $disktype read 1024k 1
+	fio.sh $logfile $disktype read 2048k 1
+	fio.sh $logfile $disktype write 4k 1
+	fio.sh $logfile $disktype write 16k 1
+	fio.sh $logfile $disktype write 256k 1
+	fio.sh $logfile $disktype write 1024k 1
+	fio.sh $logfile $disktype write 2048k 1
+	fio.sh $logfile $disktype randread 4k 1
+	fio.sh $logfile $disktype randread 16k 1
+	fio.sh $logfile $disktype randread 256k 1
+	fio.sh $logfile $disktype randread 1024k 1
+	fio.sh $logfile $disktype randread 2048k 1
+	fio.sh $logfile $disktype randwrite 4k 1
+	fio.sh $logfile $disktype randwrite 16k 1
+	fio.sh $logfile $disktype randwrite 256k 1
+	fio.sh $logfile $disktype randwrite 1024k 1
+	fio.sh $logfile $disktype randwrite 2048k 1
+
+# choose parameters by disktype
+elif [ "$mode" = "capacity_test" ]; then
+
+	if [ "$disktype" = "gp2" ] || [ "$disktype" = "io1" ]; then
+		# IOPS performance hit
+		fio.sh $logfile $disktype randread 16k 1
+		fio.sh $logfile $disktype randwrite 16k 1
+		# BW performance hit
+		fio.sh $logfile $disktype randread 256k 1
+		fio.sh $logfile $disktype randwrite 256k 1
+	fi
+
+	if [ "$disktype" = "st1" ] || [ "$disktype" = "sc1" ]; then
+		# IOPS and BW performance hit
+		fio.sh $logfile $disktype read 1024k 1
+		fio.sh $logfile $disktype write 1024k 1
+	fi
+
 fi
-## fio.sh $log $disktype $rw $bs $iodepth
-fio.sh $logfile $disktype read 4k 1
-fio.sh $logfile $disktype read 256k 1
-fio.sh $logfile $disktype read 1024k 1
-fio.sh $logfile $disktype read 2048k 1
-fio.sh $logfile $disktype write 4k 1
-fio.sh $logfile $disktype write 256k 1
-fio.sh $logfile $disktype write 1024k 1
-fio.sh $logfile $disktype write 2048k 1
-fio.sh $logfile $disktype randread 4k 1
-fio.sh $logfile $disktype randread 256k 1
-fio.sh $logfile $disktype randread 1024k 1
-fio.sh $logfile $disktype randread 2048k 1
-fio.sh $logfile $disktype randwrite 4k 1
-fio.sh $logfile $disktype randwrite 256k 1
-fio.sh $logfile $disktype randwrite 1024k 1
-fio.sh $logfile $disktype randwrite 2048k 1
 
 # teardown
 teardown.sh
