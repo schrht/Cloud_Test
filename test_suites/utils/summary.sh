@@ -10,5 +10,9 @@ else
 	path=$1
 fi
 
-grep "^\*\*" $path/*.log | awk -F ':' '{print $2}' | sort -r -u
 
+if [ "$(ls $path/*.log | wc -l)" -gt "1" ]; then
+	grep "^\*\*" $path/*.log | awk -F ':' '{print $2}' | sort -r -u
+else
+	grep "^\*\*" $path/*.log | sort -r -u
+fi
