@@ -103,9 +103,6 @@ def run_test(instance_name, instance_type=None):
         # create the volume
         volume = create_volume(volume_type=volume_type, volume_size=volume_size, iops=iops)
         
-        # wait a second for the volume to become available
-        time.sleep(20)
-        
         # attach the volume
         print 'Attaching test volume...'
         attach_volume_to_instance(region=TSCFG['REGION'], instance_name=instance_name,

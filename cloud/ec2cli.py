@@ -352,10 +352,15 @@ def create_volume(region = None, availability_zone = None, volume_type = None, v
     conn = get_connection(region)
     
     # create volume and tags
+    print 'Creating volume: Type="{0}", Size={1}GiB, IOPS={2} in availability zone "{3}"...'.format(volume_type, int(volume_size), iops, availability_zone)
     volume = conn.create_volume(size = int(volume_size), zone = availability_zone, 
                                 volume_type = volume_type, iops = iops)
     
+    print 'Creating tag for volume {0}...'.format(volume.id)
     conn.create_tags(volume.id, {"Name": 'cheshi-volume-autotest'})
+    
+    print 'Wait 20 seconds for the volume become available...'
+    time.sleep(20)
     
     return volume
     
@@ -369,6 +374,7 @@ def delete_volume(region = None, volume_id = None):
     conn = get_connection(region)
     
     # delete volume
+    print 'Deleting volume: {0}...'.format(volume_id)
     result = conn.delete_volume(volume_id)
     
     return result
