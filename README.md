@@ -91,27 +91,18 @@ $ ./run.py
 $ AWS_Test/test_suites/RHEL7-88713/run.py
 ......
 
-$ grep "\*\*" test_log/RHEL7-88713/* | awk -F ':' '{print $2}' | sort -r -u
-** VMSize       Interface  Buffer PClient BWtx(Mb/s) BWrx(Mb/s)
-** t2.2xlarge   eth0       1m     64      1035       1017      
-** t2.2xlarge   eth0       1m     1       1015       1013      
-** t2.2xlarge   eth0       128k   64      1035       1017      
-** t2.2xlarge   eth0       128k   1       1016       1015      
-** m4.16xlarge  eth0       1m     64      20115      19993     
-** m4.16xlarge  eth0       1m     1       9110       9107      
-** m4.16xlarge  eth0       128k   64      20696      20637     
-** m4.16xlarge  eth0       128k   1       9420       9417      
-** m3.2xlarge   eth0       1m     64      1112       1072      
-** m3.2xlarge   eth0       1m     1       986        985       
-** m3.2xlarge   eth0       128k   64      1072       1020      
-** m3.2xlarge   eth0       128k   1       1079       1078      
-** c4.8xlarge   eth0       1m     64      5216       5165      
-** c4.8xlarge   eth0       1m     1       5059       5059      
-** c4.8xlarge   eth0       128k   64      5129       5078      
-** c4.8xlarge   eth0       128k   1       5162       5162      
-** c3.8xlarge   eth0       1m     64      9990       9919      
-** c3.8xlarge   eth0       1m     1       9375       9372      
-** c3.8xlarge   eth0       128k   64      10008      9907      
-** c3.8xlarge   eth0       128k   1       9208       9206      
-```
+$ ./test_suites/utils/summary.sh path_to_log/RHEL7-88713/
+** VMSize       DiskType   I/OMode    BS     IODepth   Format    BW(KB/s)     IOPS    
+** m4.16xlarge  st1        write      1024k  1         raw       544608       531     
+** m4.16xlarge  st1        read       1024k  1         raw       551688       538     
+** m4.16xlarge  sc1        write      1024k  1         raw       274766       268     
+** m4.16xlarge  sc1        read       1024k  1         raw       273452       267     
+** m4.16xlarge  io1        randwrite  256k   1         raw       338706       1323    
+** m4.16xlarge  io1        randwrite  16k    1         raw       219207       13700   
+** m4.16xlarge  io1        randread   256k   1         raw       340829       1331    
+** m4.16xlarge  io1        randread   16k    1         raw       331893       20743   
+** m4.16xlarge  gp2        randwrite  256k   1         raw       168891       659     
+** m4.16xlarge  gp2        randwrite  16k    1         raw       164945       10309   
+** m4.16xlarge  gp2        randread   256k   1         raw       169929       663     
+** m4.16xlarge  gp2        randread   16k    1         raw       165946       10371   
 
