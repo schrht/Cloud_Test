@@ -30,7 +30,7 @@ show "" systemd-analyze
 
 show "" lsblk -p
 show "" ifconfig -a
-show "EC2-Metadata" ec2-metadata | grep -v ssh-rsa
+show "Metadata" metadata.sh
 
 exit 0
 

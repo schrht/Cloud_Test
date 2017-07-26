@@ -9,7 +9,7 @@
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
-vmsize=$(ec2-metadata -t | awk '{print $2}')
+vmsize=$(metadata.sh -t | awk '{print $2}')
 disktype=$2
 rw=$3
 bs=$4
