@@ -23,6 +23,8 @@ eval $1 >> $logfile 2>&1
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
+run_cmd 'rpm -qa | grep kexec'
+
 run_cmd 'sudo systemd-analyze time'
 run_cmd 'sudo systemd-analyze blame'
 run_cmd 'sudo systemd-analyze critical-chain'

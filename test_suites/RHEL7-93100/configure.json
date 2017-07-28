@@ -25,6 +25,7 @@
         "x1.32xlarge",
         "d2.8xlarge",
         "i2.8xlarge",
-        "i3.16xlarge"
+        "i3.16xlarge",
+        "g2.2xlarge"
     ]
 }
