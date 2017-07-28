@@ -29,21 +29,17 @@ run_cmd 'sudo systemd-analyze critical-chain'
 run_cmd 'sudo systemd-analyze dot'
 
 # Get Performance KPI
-grep "Startup finished in" $logfile | grep "(initrd)" >/dev/null 2>&1
+line=$(grep "Startup finished in" $logfile | head -1 | sed 's/min /min/g')
 
-if [ "$?" = "0" ]; then
+if [[ "$line" =~ "(initrd)" ]]; then
 	# TARGET: "Startup finished in 1.890s (kernel) + 950ms (initrd) + 3.456s (userspace) = 6.296s"
 	# TARGET: "Startup finished in 2.333s (kernel) + 3.913s (initrd) + 1min 18.659s (userspace) = 1min 24.905s"
-	line=$(grep "Startup finished in" $file | head -1 | sed 's/min /min/g')
-
 	kernel=$(echo $line | awk '{print $4}')
 	initrd=$(echo $line | awk '{print $7}')
 	userspace=$(echo $line | awk '{print $10}')
 	total=$(echo $line | awk '{print $13}')
 else
 	# TARGET: "Startup finished in 3.713s (kernel) + 4.430s (userspace) = 8.144s"
-	line=$(grep "Startup finished in" $file | head -1 | sed 's/min /min/g')
-
 	kernel=$(echo $line | awk '{print $4}')
 	initrd="-"
 	userspace=$(echo $line | awk '{print $7}')
