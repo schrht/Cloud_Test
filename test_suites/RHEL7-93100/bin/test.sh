@@ -32,23 +32,28 @@ run_cmd 'sudo systemd-analyze dot'
 grep "Startup finished in" $logfile | grep "(initrd)" >/dev/null 2>&1
 
 if [ "$?" = "0" ]; then
-	# Startup finished in 1.890s (kernel) + 950ms (initrd) + 3.456s (userspace) = 6.296s
-	kernel=$(grep "Startup finished in" $logfile | head -1 | awk '{print $4}')
-	initrd=$(grep "Startup finished in" $logfile | head -1 | awk '{print $7}')
-	userspace=$(grep "Startup finished in" $logfile | head -1 | awk '{print $10}')
-	total=$(grep "Startup finished in" $logfile | head -1 | awk '{print $13}')
+	# TARGET: "Startup finished in 1.890s (kernel) + 950ms (initrd) + 3.456s (userspace) = 6.296s"
+	# TARGET: "Startup finished in 2.333s (kernel) + 3.913s (initrd) + 1min 18.659s (userspace) = 1min 24.905s"
+	line=$(grep "Startup finished in" $file | head -1 | sed 's/min /min/g')
+
+	kernel=$(echo $line | awk '{print $4}')
+	initrd=$(echo $line | awk '{print $7}')
+	userspace=$(echo $line | awk '{print $10}')
+	total=$(echo $line | awk '{print $13}')
 else
-	# Startup finished in 3.713s (kernel) + 4.430s (userspace) = 8.144s
-	kernel=$(grep "Startup finished in" $logfile | head -1 | awk '{print $4}')
+	# TARGET: "Startup finished in 3.713s (kernel) + 4.430s (userspace) = 8.144s"
+	line=$(grep "Startup finished in" $file | head -1 | sed 's/min /min/g')
+
+	kernel=$(echo $line | awk '{print $4}')
 	initrd="-"
-	userspace=$(grep "Startup finished in" $logfile | head -1 | awk '{print $7}')
-	total=$(grep "Startup finished in" $logfile | head -1 | awk '{print $10}')
+	userspace=$(echo $line | awk '{print $7}')
+	total=$(echo $line | awk '{print $10}')
 fi
 
 # Write down a summary
 echo -e "\nTest Summary: \n----------\n" >> $logfile
-printf "** %-12s %-10s %-10s %-10s %-10s %-10s\n" VMSize Method Kernel Initrd Userspace Total >> $logfile
-printf "** %-12s %-10s %-10s %-10s %-10s %-10s\n" ${inst_type} ${label} $kernel $initrd $userspace $total >> $logfile
+printf "** %-12s %-10s %-10s %-10s %-11s %-11s\n" VMSize Method Kernel Initrd Userspace Total >> $logfile
+printf "** %-12s %-10s %-10s %-10s %-11s %-11s\n" ${inst_type} ${label} $kernel $initrd $userspace $total >> $logfile
 
 # teardown
 teardown.sh
