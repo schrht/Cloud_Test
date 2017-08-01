@@ -1,6 +1,6 @@
-# AWS_Test
+# Cloud_Test
 
-AWS_Test is the simple test suites to perform my AWS test.
+Cloud_Test is the simple test suites to perform my AWS test.
 
 # Screenshot
 
@@ -13,7 +13,7 @@ N/A
 Download the source code from github:
 
 ```
-git clone https://github.com/SCHEN2015/AWS_Test.git
+git clone https://github.com/SCHEN2015/Cloud_Test.git
 ```
 
 ## Install library
@@ -47,7 +47,7 @@ change the python version according to your own.
 
 # Edit the configuration file
 
-AWS_Test uses a property file in order to load default settings i.e. username, default pem file, default region, etc. Therefore, you must edit configuration file:
+Cloud_Test uses a property file in order to load default settings i.e. username, default pem file, default region, etc. Therefore, you must edit configuration file:
 
 ```
 vi ~/.ec2cfg.json
@@ -73,11 +73,11 @@ vi ~/.ec2cfg.json
 # Usage
 
 ```
-$ ls -d AWS_Test/test_suites/RHEL*
+$ ls -d Cloud_Test/test_suites/RHEL*
 RHEL7-87117  RHEL7-87122  RHEL7-87306  RHEL7-88713
 RHEL7-87119  RHEL7-87124  RHEL7-87311  RHEL7-93100
 
-$ cd AWS_Test/test_suites/RHEL7-88713
+$ cd Cloud_Test/test_suites/RHEL7-88713
 $ vi configure.json
 ......
 
@@ -88,7 +88,7 @@ $ ./run.py
 # Example
 
 ```
-$ AWS_Test/test_suites/RHEL7-88713/run.py
+$ Cloud_Test/test_suites/RHEL7-88713/run.py
 ......
 
 $ ./test_suites/utils/summary.sh path_to_log/RHEL7-88713/
