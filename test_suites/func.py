@@ -3,6 +3,12 @@
 
 import os
 import json
+import time
+import sys
+
+sys.path.append('../')
+from cloud.ec2cli import run_instant_command_on_instance
+
 
 
 def byteify(inputs):
@@ -63,3 +69,35 @@ def load_tscfg(data_file = './configure.json'):
     return tscfg
 
 
+def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', time_out = 600):
+    '''
+    Waiting for the instance to be able to connect with via ssh.
+    Retrun Value: SSH connectivity
+    '''
+    
+    result_code = 1
+    due_time = time.time() + time_out
+    
+    while result_code != 0 and time.time() < due_time:
+        # tring to connect instance
+        result_code = run_instant_command_on_instance(region = region, instance_name = instance_name,
+                                                 user_name = user_name, timeout = 2, command = 'echo >/dev/null')
+        time.sleep(10)
+
+    if result_code == 0:
+        # command succeed via ssh connection
+        return True
+    else:
+        return False
+
+
+if __name__ == '__main__':
+    
+    pass
+
+    #waiting_for_instance_online('ap-northeast-1', 'cheshi-script-test', user_name = 'ec2-user', time_out=60)
+    
+    
+    
+    
+    

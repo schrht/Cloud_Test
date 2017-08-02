@@ -331,6 +331,32 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
     return None
 
 
+def run_instant_command_on_instance(region = None, instance_name = None, user_name = None, timeout = 0, command = 'uname -r'):
+    '''Upload files to EC2 instance, implemented by `scp`.'''
+
+    if region is None or region == '':
+        region = EC2CFG['DEFAULT_REGION']
+    if user_name is None or region == '':
+        user_name = EC2CFG['DEFAULT_USER_NAME']
+        
+    if isinstance(timeout, int) and timeout > 0:
+        cmd_timeout = '-o ConnectTimeout={0}'.format(timeout)
+    else:
+        cmd_timeout = ''
+        
+    # get public_dns_name related to instance name
+    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name']
+    
+    # check the connection
+    cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
+    os.system(cmd)
+    
+    cmd = 'ssh -o StrictHostKeyChecking=no {0} -i {1} {2}@{3} \'{4}\''.format(cmd_timeout, EC2CFG['PEM'][region], user_name, public_dns_name, command)
+    status = os.system(cmd)
+
+    return status
+
+
 def create_volume(region = None, availability_zone = None, volume_type = None, volume_size = None, iops = None):
     
     # set default values
