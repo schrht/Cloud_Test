@@ -1,0 +1,5 @@
+# Use this script in pipe line to format the outputs from summary.sh
+
+awk '{for(i=2; i<=NF; i++) printf $i","; printf "\n"}' | sed 's/,$//'
+
+
