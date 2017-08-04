@@ -14,61 +14,16 @@ from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
 
 from test_suites.func import load_tscfg
+from test_suites.func import prepare_on_instance
+from test_suites.func import collect_log_from_instance
 from test_suites.func import waiting_for_instance_online
-
-
-def prepare_on_instance(instance_name):
-    
-    run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=TSCFG['USER_NAME'], 
-                                  cmd_line='mkdir -p ~/workspace/bin/')
-    
-    upload_to_instance(region=TSCFG['REGION'],
-                        instance_name=instance_name,
-                        user_name=TSCFG['USER_NAME'], 
-                        src='../global_bin/*',
-                        dst='~/workspace/bin/')
-    
-    upload_to_instance(region=TSCFG['REGION'],
-                        instance_name=instance_name,
-                        user_name=TSCFG['USER_NAME'], 
-                        src='./bin/*',
-                        dst='~/workspace/bin/')
-    
-    run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=TSCFG['USER_NAME'], 
-                                  cmd_line='chmod 755 ~/workspace/bin/*')
-
-    run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=TSCFG['USER_NAME'], 
-                                  cmd_line='mkdir -p ~/workspace/log/ && rm -rf ~/workspace/log/*')
-    
-    return 
-
-
-def collect_log_from_instance(instance_name):
-    
-    log_save_path = TSCFG['LOG_SAVE_PATH']
-    
-    os.system('mkdir -p ' + log_save_path)
-    
-    download_from_instance(region=TSCFG['REGION'],
-                           instance_name=instance_name,
-                           user_name=TSCFG['USER_NAME'], 
-                           src='~/workspace/log/*',
-                           dst=log_save_path)
-
-    return
 
 
 def run_test(instance_name, instance_type=None):
 
     # prepare
     print 'Preparing environment...'
-    prepare_on_instance(instance_name)
+    prepare_on_instance(TSCFG, instance_name)
     
     # run test
     print 'Running test on instance...'
@@ -81,7 +36,7 @@ def run_test(instance_name, instance_type=None):
     
     # get log
     print 'Getting log files...'
-    collect_log_from_instance(instance_name)
+    collect_log_from_instance(TSCFG, instance_name)
     
     return
 

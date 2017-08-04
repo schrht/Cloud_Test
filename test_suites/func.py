@@ -8,7 +8,9 @@ import sys
 
 sys.path.append('../')
 from cloud.ec2cli import run_instant_command_on_instance
-
+from cloud.ec2cli import run_shell_command_on_instance
+from cloud.ec2cli import upload_to_instance
+from cloud.ec2cli import download_from_instance
 
 
 def byteify(inputs):
@@ -94,6 +96,75 @@ def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', t
         print 'Waited {0}s but the instance still can\'t be reached by ssh.'.format(time.time() - start_time)
 
         return False
+
+
+def prepare_on_instance(tscfg, instance_name):
+    '''Prepare environment for the test to run.
+    Jobs:
+        1. mkdir workspace/bin workspace/log
+        2. upload test scripts to workspace/bin and chmod 755
+        3. clean logs under workspace/log
+    Inputs:
+        tscfg         : dict, test suite configuration
+        instance_name : string, the name of instance
+    Retrun Value:
+        Always None
+    '''
+    
+    run_shell_command_on_instance(region=tscfg['REGION'], 
+                                  instance_name=instance_name, 
+                                  user_name=tscfg['USER_NAME'], 
+                                  cmd_line='mkdir -p ~/workspace/bin/')
+    
+    upload_to_instance(region=tscfg['REGION'],
+                        instance_name=instance_name,
+                        user_name=tscfg['USER_NAME'], 
+                        src='../global_bin/*',
+                        dst='~/workspace/bin/')
+    
+    upload_to_instance(region=tscfg['REGION'],
+                        instance_name=instance_name,
+                        user_name=tscfg['USER_NAME'], 
+                        src='./bin/*',
+                        dst='~/workspace/bin/')
+    
+    run_shell_command_on_instance(region=tscfg['REGION'], 
+                                  instance_name=instance_name, 
+                                  user_name=tscfg['USER_NAME'], 
+                                  cmd_line='chmod 755 ~/workspace/bin/*')
+
+    run_shell_command_on_instance(region=tscfg['REGION'], 
+                                  instance_name=instance_name, 
+                                  user_name=tscfg['USER_NAME'], 
+                                  cmd_line='mkdir -p ~/workspace/log/ && rm -rf ~/workspace/log/*')
+    
+    return 
+
+
+def collect_log_from_instance(tscfg, instance_name):
+    '''Collect log fils from instance.
+    Jobs:
+        1. mkdir to save log files on local host
+        2. download all log files from worksapce/log
+    Inputs:
+        tscfg         : dict, test suite configuration
+        instance_name : string, the name of instance
+    Retrun Value:
+        Always None
+    '''
+    
+    log_save_path = tscfg['LOG_SAVE_PATH']
+    
+    os.system('mkdir -p ' + log_save_path)
+    
+    download_from_instance(region=tscfg['REGION'],
+                           instance_name=instance_name,
+                           user_name=tscfg['USER_NAME'], 
+                           src='~/workspace/log/*',
+                           dst=log_save_path)
+
+    return
+
 
 
 if __name__ == '__main__':
