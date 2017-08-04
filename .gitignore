@@ -1,0 +1,13 @@
+# Python
+*.py[cod]
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# Others
+*.tmp
+*.bak
+*.sw?
+
