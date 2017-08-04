@@ -14,6 +14,8 @@ from cloud.ec2cli import terminate_instance
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
 
+from test_suites.func import waiting_for_instance_online
+
 
 def load_tscfg():
     '''load test suite configuration'''
@@ -109,8 +111,7 @@ def run_test(instance_name, instance_type=None):
                                            cmd_line='/bin/bash ~/workspace/bin/test1.sh')
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
     
-    print 'Waiting 2 minutes for system rebooting...'
-    time.sleep(120)
+    waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
     
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
@@ -133,8 +134,7 @@ def test(instance_type):
         create_instance(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
                         image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
         
-        print 'Waiting 2 minutes...'
-        time.sleep(120)
+        waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
 
         print 'Start to run test on {0}...'.format(instance_type)
         run_test(instance_name, instance_type)
