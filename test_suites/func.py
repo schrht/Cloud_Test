@@ -25,49 +25,52 @@ def byteify(inputs):
         return inputs
 
 
-def load_tscfg(data_file = './configure.json'):
-    '''load test suite configuration'''
+def load_tscfg(data_file = './configure.json', default_data_file='../default_configure.json'):
+    '''Load test suite configuration
+    Strategy:
+        1. Load config data from specified data_file;
+        2. Load default config data from test_suites/default_configure.json;
+    Reture Value:
+        tscfg : dict, test suite configuration
+    '''
 
-    # data
+    # test suite configuration
     tscfg = {}
 
-    if not os.path.exists(data_file):
-        # create the data file
-        tscfg['CASE_ID'] = 'rhelx-00000'
-        os.mknod(data_file)
-        with open(data_file, 'w') as f:
-            f.write(json.dumps(tscfg))
-    else:
-        # read from data file
+    # if specified data_file exists, load config data
+    if os.path.exists(data_file):
         with open(data_file, 'r') as f:
             tscfg = byteify(json.load(f))
-        
-    # data validation
-    if not tscfg.has_key('CASE_ID'):
-        tscfg['CASE_ID'] = 'rhelx-00000'
 
-    if not tscfg.has_key('LOG_SAVE_PATH'):
-        tscfg['LOG_SAVE_PATH'] = '/tmp/'
-        
-    if not tscfg.has_key('REGION'):
-        tscfg['REGION'] = None
-        
-    if not tscfg.has_key('USER_NAME'):
-        tscfg['USER_NAME'] = None
-        
-    if not tscfg.has_key('IMAGE_ID'):
-        tscfg['IMAGE_ID'] = None
-        
-    if not tscfg.has_key('SUBNET_ID'):
-        tscfg['SUBNET_ID'] = None
-        
-    if not tscfg.has_key('SECURITY_GROUP_IDS'):
-        tscfg['SECURITY_GROUP_IDS'] = None
-        
-    if not tscfg.has_key('INSTANCE_TYPE_LIST'):
-        tscfg['INSTANCE_TYPE_LIST'] = ('t2.micro',)
-        
-        
+
+    # load default config data
+    default_tscfg={}
+
+    if not os.path.exists(default_data_file):
+        # default_configure.json must exist, create one if not
+        default_tscfg['CASE_ID'] = 'RHEL7-00000'
+        default_tscfg['LOG_SAVE_PATH'] = '/home/cheshi/workspace/rhel74-test-outputs/'
+        default_tscfg['REGION'] = 'ap-northeast-1'
+        default_tscfg['USER_NAME'] = 'ec2-user'
+        default_tscfg['IMAGE_ID'] = 'ami-3901e15f'
+        default_tscfg['SUBNET_ID'] = 'subnet-989a6bef'
+        default_tscfg['SECURITY_GROUP_IDS'] = ('sg-010ffc67',)
+        default_tscfg['INSTANCE_TYPE_LIST'] = ('t2.nano',)
+
+        os.mknod(default_data_file)
+        with open(default_data_file, 'w') as f:
+            f.write(json.dumps(default_tscfg))
+
+    # load default config data from default_configure.json
+    with open(default_data_file, 'r') as f:
+        default_tscfg = byteify(json.load(f))
+
+
+    # data validation and set default value
+    for key in default_tscfg:
+        if not tscfg.has_key(key):
+            tscfg[key] = default_tscfg[key]
+
     return tscfg
 
 
@@ -153,7 +156,7 @@ def collect_log_from_instance(tscfg, instance_name):
         Always None
     '''
     
-    log_save_path = tscfg['LOG_SAVE_PATH']
+    log_save_path = tscfg['LOG_SAVE_PATH'] + tscfg['CASE_ID'] + '/'
     
     os.system('mkdir -p ' + log_save_path)
     
@@ -166,14 +169,10 @@ def collect_log_from_instance(tscfg, instance_name):
     return
 
 
-
 if __name__ == '__main__':
     
     pass
 
+    #print '=============\n', load_tscfg(default_data_file='./default_configure.json')
     #waiting_for_instance_online('ap-northeast-1', 'cheshi-script-test', user_name = 'ec2-user', time_out=60)
-    
-    
-    
-    
-    
+

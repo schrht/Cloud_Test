@@ -1,13 +1,5 @@
 {
-    "CASE_ID": "RHEL-87311",
-    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74-test-outputs/RHEL7-87311/",
-
-    "REGION": "ap-northeast-1",
-    "IMAGE_ID": "ami-010d1066",
-    "SUBNET_ID": "subnet-989a6bef",
-    "SECURITY_GROUP_IDS": [
-        "sg-010ffc67"
-    ],
+    "CASE_ID": "RHEL7-87311",
 
     "INSTANCE_TYPE_LIST": [
         "i3.large",

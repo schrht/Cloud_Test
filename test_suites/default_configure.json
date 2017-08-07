@@ -1,0 +1,17 @@
+{
+    "CASE_ID": "RHEL7-00000",
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74-test-outputs/",
+
+    "REGION": "ap-northeast-1",
+    "USER_NAME": "ec2-user",
+
+    "IMAGE_ID": "ami-3901e15f",
+    "SUBNET_ID": "subnet-989a6bef",
+    "SECURITY_GROUP_IDS": [
+        "sg-010ffc67"
+    ],
+
+    "INSTANCE_TYPE_LIST": [
+        "t2.nano"
+    ]
+}
