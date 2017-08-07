@@ -75,14 +75,15 @@ def load_tscfg(data_file = './configure.json', default_data_file='../default_con
 
 
 def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', time_out = 600):
-    '''Waiting for the instance to be able to connect with via ssh.
-    Retrun Value: SSH connectivity
+    '''Waiting for the instance can be connected by ssh.
+    Retrun Value:
+        bool, represents the SSH connectivity
     '''
     
     result_code = 1
     start_time = time.time()
 
-    print 'Waiting for Instance...'
+    print 'Waiting for the instance (keep tring)...'
     
     while result_code != 0 and (time.time() - start_time) < time_out:
         # tring to connect instance
@@ -91,13 +92,12 @@ def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', t
                                                  user_name = user_name, timeout = 2, command = 'echo >/dev/null')
 
     if result_code == 0:
-        # command succeed via ssh connection
+        # ssh connection is OK now
         print 'Waited {0}s for the instance can be connected by ssh.'.format(time.time() - start_time)
-        
         return True
     else:
-        print 'Waited {0}s but the instance still can\'t be reached by ssh.'.format(time.time() - start_time)
-
+        # time out
+        print 'Waited {0}s but the instance still can\'t be connected by ssh.'.format(time.time() - start_time)
         return False
 
 
