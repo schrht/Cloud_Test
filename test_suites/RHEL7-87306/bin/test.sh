@@ -31,10 +31,26 @@ run_cmd 'cat /proc/meminfo'
 CPU=$(grep "^CPU(s):" $logfile | awk '{print $2}')
 MEM=$(grep "^MemTotal:" $logfile | awk '{print $2}')
 
+# nproc should equal to CPU number
+if [ "$(nproc)" != "$CPU" ]; then
+	echo "* WARNING: nproc is mismatched with CPU number!!! ($(nproc) != $CPU)" >> $logfile
+else
+	echo "* PASSED: nproc is matched with CPU number. ($(nproc) = $CPU)" >> $logfile
+fi
+
+# Check CPU flags
+if [ "$(sed -n 's/^flags.*://p' $logfile | sort -u | wc -l)" != "1" ]; then
+	# Processes kept mismatched CPU flags
+	echo "* ERROR: Processes kept mismatched CPU flags." >> $logfile
+else
+	# Get CPU flags, remove blanks from head/tail, get 1-7 chars of MD5 (for further comparison)
+	FLAGS=$(sed -n 's/^flags.*://p' $logfile | sort -u | xargs echo | md5sum | cut -c 1-7)
+fi
+
 # Write down a summary
 echo -e "\nTest Summary: \n----------\n" >> $logfile
-printf "** %-12s %-5s %-12s\n" VMSize "CPU#" "MemSize(kB)" >> $logfile
-printf "** %-12s %-5s %-12s\n" $inst_type $CPU $MEM >> $logfile
+printf "** %-12s %-5s %-12s %-12s\n" VMSize "CPU#" "MemSize(kB)" Flags >> $logfile
+printf "** %-12s %-5s %-12s %-12s\n" $inst_type $CPU $MEM $FLAGS >> $logfile
 
 # teardown
 teardown.sh
