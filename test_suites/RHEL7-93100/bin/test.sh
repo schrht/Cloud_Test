@@ -23,7 +23,14 @@ eval $1 >> $logfile 2>&1
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
+# Waiting for Bootup finished
+while [[ "$(sudo systemd-analyze time 2>&1)" =~ "Bootup is not yet finished" ]]; do
+	echo "[$(date)] Bootup is not yet finished." >> $logfile
+	sleep 2s
+done
+
 run_cmd 'rpm -qa | grep kexec'
+run_cmd 'rpm -qa | grep rh-amazon-rhui-client'
 
 run_cmd 'sudo systemd-analyze time'
 run_cmd 'sudo systemd-analyze blame'
