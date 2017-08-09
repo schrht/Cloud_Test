@@ -2,7 +2,7 @@
 #directory=/mnt/vol0	# ebs-enhanced
 filename=/dev/xvdf	# ebs-enhanced
 direct=1
-rw=randwrite		# randread /randwrite
+rw=randread		# randread /randwrite
 bs=16k
 #size=1G		# ebs-enhanced
 numjobs=16
@@ -13,7 +13,6 @@ norandommap
 ioengine=libaio		# ebs-enhanced
 iodepth=8		# ebs-enhanced
 
-[hit-bw]
-bs=256k
+[hit-io-bw]
 stonewall
 
