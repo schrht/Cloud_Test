@@ -74,7 +74,8 @@ def test(instance_type):
         create_instance(region=TSCFG['REGION'], instance_name=instance_name+'-c', instance_type=instance_type, 
                         image_id = TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
         
-        waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
+        waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-s', user_name=TSCFG['USER_NAME'])
+        waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-c', user_name=TSCFG['USER_NAME'])
 
         print 'Start to run test on {0}...'.format(instance_type)
         run_test(instance_name, instance_type)
