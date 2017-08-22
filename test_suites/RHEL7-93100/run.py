@@ -28,12 +28,14 @@ def run_test(instance_name, instance_type=None):
     # run test
     print 'Running test on instance...'
     
+    print 'Collect bootup time...'
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
                                            user_name=TSCFG['USER_NAME'], 
                                            cmd_line='/bin/bash ~/workspace/bin/test.sh create')
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
-    
+
+    print 'Reboot the instance...'
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
                                            user_name=TSCFG['USER_NAME'], 
@@ -41,7 +43,7 @@ def run_test(instance_name, instance_type=None):
     
     waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
 
-    
+    print 'Collect bootup time...'
     result = run_shell_command_on_instance(region=TSCFG['REGION'], 
                                            instance_name=instance_name, 
                                            user_name=TSCFG['USER_NAME'], 
