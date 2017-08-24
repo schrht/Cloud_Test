@@ -2,13 +2,13 @@
 
 function collect(){
 	# $1: the folder with logs
-	
+
 	[ ! -d "$1" ] && echo "This function requires a folder as input." && return
 
 	filelist=$(ls $1/*.log)
 	for logfile in $filelist; do
 		vmsize=$(grep instance-type: $logfile | awk '{print $2}')
-		
+
 		system="UNKNOWN"
 		grep "Ubuntu" $logfile >/dev/null 2>&1
                 [ "$?" = "0" ] && system="UBTL"

@@ -79,12 +79,12 @@ def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', t
     Retrun Value:
         bool, represents the SSH connectivity
     '''
-    
+
     result_code = 1
     start_time = time.time()
 
     print 'Waiting for the instance (keep tring)...'
-    
+
     while result_code != 0 and (time.time() - start_time) < time_out:
         # tring to connect instance
         time.sleep(10)
@@ -113,35 +113,35 @@ def prepare_on_instance(tscfg, instance_name):
     Retrun Value:
         Always None
     '''
-    
-    run_shell_command_on_instance(region=tscfg['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=tscfg['USER_NAME'], 
+
+    run_shell_command_on_instance(region=tscfg['REGION'],
+                                  instance_name=instance_name,
+                                  user_name=tscfg['USER_NAME'],
                                   cmd_line='mkdir -p ~/workspace/bin/')
-    
+
     upload_to_instance(region=tscfg['REGION'],
                         instance_name=instance_name,
-                        user_name=tscfg['USER_NAME'], 
+                        user_name=tscfg['USER_NAME'],
                         src='../global_bin/*',
                         dst='~/workspace/bin/')
-    
+
     upload_to_instance(region=tscfg['REGION'],
                         instance_name=instance_name,
-                        user_name=tscfg['USER_NAME'], 
+                        user_name=tscfg['USER_NAME'],
                         src='./bin/*',
                         dst='~/workspace/bin/')
-    
-    run_shell_command_on_instance(region=tscfg['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=tscfg['USER_NAME'], 
+
+    run_shell_command_on_instance(region=tscfg['REGION'],
+                                  instance_name=instance_name,
+                                  user_name=tscfg['USER_NAME'],
                                   cmd_line='chmod 755 ~/workspace/bin/*')
 
-    run_shell_command_on_instance(region=tscfg['REGION'], 
-                                  instance_name=instance_name, 
-                                  user_name=tscfg['USER_NAME'], 
+    run_shell_command_on_instance(region=tscfg['REGION'],
+                                  instance_name=instance_name,
+                                  user_name=tscfg['USER_NAME'],
                                   cmd_line='mkdir -p ~/workspace/log/ && rm -rf ~/workspace/log/*')
-    
-    return 
+
+    return
 
 
 def collect_log_from_instance(tscfg, instance_name):
@@ -155,14 +155,14 @@ def collect_log_from_instance(tscfg, instance_name):
     Retrun Value:
         Always None
     '''
-    
+
     log_save_path = tscfg['LOG_SAVE_PATH'] + tscfg['CASE_ID'] + '/'
-    
+
     os.system('mkdir -p ' + log_save_path)
-    
+
     download_from_instance(region=tscfg['REGION'],
                            instance_name=instance_name,
-                           user_name=tscfg['USER_NAME'], 
+                           user_name=tscfg['USER_NAME'],
                            src='~/workspace/log/*',
                            dst=log_save_path)
 
@@ -170,7 +170,7 @@ def collect_log_from_instance(tscfg, instance_name):
 
 
 if __name__ == '__main__':
-    
+
     pass
 
     #print '=============\n', load_tscfg(default_data_file='./default_configure.json')

@@ -15,9 +15,9 @@ from boto.manage.cmdshell import sshclient_from_instance
 
 def load_ec2cfg():
     '''load ec2 configuration'''
-    
+
     EC2CFG_JSON_FILE = '/home/cheshi/.ec2cfg.json'
-    
+
     def byteify(inputs):
         '''Convert unicode to string for JSON.loads'''
         if isinstance(inputs, dict):
@@ -29,7 +29,7 @@ def load_ec2cfg():
         else:
             return inputs
 
-    
+
     if not os.path.exists(EC2CFG_JSON_FILE):
         default_ec2cfg = {}
         default_ec2cfg['DEFAULT_REGION']='ap-northeast-1'
@@ -40,48 +40,48 @@ def load_ec2cfg():
         default_ec2cfg['PEM']['ap-northeast-1'] = '/home/cheshi/.pem/ap-northeast-1-cheshi.pem'
         default_ec2cfg['PEM']['ap-us-east-1'] = '/home/cheshi/.pem/ap-us-east-1-cheshi.pem'
         default_ec2cfg['DEFAULT_USER_NAME'] = 'ec2-user'
-    
+
         os.mknod(EC2CFG_JSON_FILE)
         with open(EC2CFG_JSON_FILE, 'w') as json_file:
             json_file.write(json.dumps(default_ec2cfg))
- 
+
     with open(EC2CFG_JSON_FILE, 'r') as json_file:
         my_dict = json.load(json_file)
         ec2cfg = byteify(my_dict)
-        
+
     return ec2cfg
 
 
 def get_connection(region = None):
     '''get connection to the region'''
-    
+
     conn = None
-    
+
     if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
-    
+
     if isinstance(region, str):
         conn = boto.ec2.connect_to_region(
             region,
             aws_access_key_id=EC2CFG['AWS_ACCESS_KEY_ID'],
             aws_secret_access_key=EC2CFG['AWS_SECRET_ACCESS_KEY'])
-        
+
     if conn is None:
         sys.stderr.write("ERROR: Connect to region \"%s\" failed.\n" % (region))
-        
+
     return conn
 
 
-def create_instance(region = None, instance_name = 'cheshi-test1', 
+def create_instance(region = None, instance_name = 'cheshi-test1',
                     image_id = 'ami-4806342f', instance_type = 't2.micro',
                     key_name = 'cheshi', security_group_ids = ['launch-wizard-41'],
                     subnet_id = None, private_ip_address = None,
                     volume_delete_on_termination = True):
     '''Create an EC2 instance.'''
 
-    # connect to region    
+    # connect to region
     conn = get_connection(region)
-    
+
     # check if instance already exists
     existing_reservations = conn.get_all_instances(
         filters={"tag:Name": "%s" % instance_name})
@@ -93,7 +93,7 @@ def create_instance(region = None, instance_name = 'cheshi-test1',
 
     # launch instance
     print "1. Launching instance: %s" % (instance_name)
-    
+
     print(
         image_id,
         instance_type,
@@ -114,11 +114,11 @@ def create_instance(region = None, instance_name = 'cheshi-test1',
 
     # get instance
     instance = reservation.instances[0]
-    
+
     # set instance name
     print "2. Creating tag as instance name: {\"Name\": %s}" % (instance_name)
     conn.create_tags(instance.id, {"Name": instance_name})
-    
+
     # waiting for running
     while instance.state == u'pending':
         time.sleep(10)
@@ -135,22 +135,22 @@ def create_instance(region = None, instance_name = 'cheshi-test1',
 
 def terminate_instance(region = None, instance_name = None, instance_id = None, quick = False):
     '''Terminate an EC2 instance.'''
-    
-    # connect to region    
+
+    # connect to region
     conn = get_connection(region)
-    
+
     # provide instance name
     if instance_name:
         reservations = conn.get_all_instances(
             filters={"tag:Name": "%s" % (instance_name)})
-        
+
         for reservation in reservations:
             instance = reservation.instances[0]
             print "Terminating instance: %s id: %s" % (instance_name, instance.id)
-            
+
             instance_id_list = instance.id.split()
             conn.terminate_instances(instance_ids=instance_id_list)
-            
+
             if not quick:
                 while instance.state != u'terminated':
                     time.sleep(10)
@@ -160,10 +160,10 @@ def terminate_instance(region = None, instance_name = None, instance_id = None, 
     # provide instance id
     if instance_id:
         print "Terminating instance by id: %s" % (instance_id)
-        
+
         instance_id_list = instance_id.split()
         conn.terminate_instances(instance_ids=instance_id_list)
-        
+
         reservations = conn.get_all_reservations(instance_id)
         reservation = reservations[0]
         instance = reservation.instances[0]
@@ -178,69 +178,69 @@ def terminate_instance(region = None, instance_name = None, instance_id = None, 
 
 def get_instance_info_by_name(region = None, instance_name = None):
     '''Get instance dict from EC2 service by providing instance name.'''
-    
-    # connect to region    
+
+    # connect to region
     conn = get_connection(region)
 
     # get instance information by name
     reservation = conn.get_all_instances(filters={"tag:Name": "%s" % instance_name})[0]
     instance = reservation.instances[0]
-    
+
     return instance.__dict__.copy()
 
 
 def attach_volume_to_instance(region = None, instance_name = None, volume_id = None, volume_delete_on_termination = True, quick = False):
     '''Attach volume to an existing EC2 instance.'''
-    
-    # connect to region    
-    conn = get_connection(region)
 
-    # get instance
-    reservation = conn.get_all_instances(filters={"tag:Name": "%s" % instance_name})[0]
-    instance = reservation.instances[0]
-    
-    volume_device = EC2CFG['SECONDARY_VOLUME_DEVICE']
-
-    print "Attaching volume: %s to instance: %s as device: %s" % (volume_id, instance.id, volume_device)
-    conn.attach_volume(volume_id, instance.id, volume_device)
-    if volume_delete_on_termination:
-        instance.modify_attribute('blockDeviceMapping', {volume_device: True})
-    
-    if not quick:
-        state = ''
-        while state != u'attached':
-            time.sleep(5)
-            state = conn.get_all_volumes(volume_ids=volume_id)[0].attachment_state()
-            print "Attachment state: %s" % (state)
-            
-    return
-    
-    
-def detach_volume_from_instance(region = None, instance_name = None, volume_id = None, force = False, quick = False):
-    '''Detach volume from an existing EC2 instance.'''
-    
     # connect to region
     conn = get_connection(region)
 
     # get instance
     reservation = conn.get_all_instances(filters={"tag:Name": "%s" % instance_name})[0]
     instance = reservation.instances[0]
-    
+
+    volume_device = EC2CFG['SECONDARY_VOLUME_DEVICE']
+
+    print "Attaching volume: %s to instance: %s as device: %s" % (volume_id, instance.id, volume_device)
+    conn.attach_volume(volume_id, instance.id, volume_device)
+    if volume_delete_on_termination:
+        instance.modify_attribute('blockDeviceMapping', {volume_device: True})
+
+    if not quick:
+        state = ''
+        while state != u'attached':
+            time.sleep(5)
+            state = conn.get_all_volumes(volume_ids=volume_id)[0].attachment_state()
+            print "Attachment state: %s" % (state)
+
+    return
+
+
+def detach_volume_from_instance(region = None, instance_name = None, volume_id = None, force = False, quick = False):
+    '''Detach volume from an existing EC2 instance.'''
+
+    # connect to region
+    conn = get_connection(region)
+
+    # get instance
+    reservation = conn.get_all_instances(filters={"tag:Name": "%s" % instance_name})[0]
+    instance = reservation.instances[0]
+
     volume_device = EC2CFG['SECONDARY_VOLUME_DEVICE']
 
     print "Detaching volume: %s from instance: %s as device: %s" % (volume_id, instance.id, volume_device)
     conn.detach_volume(volume_id, instance.id, volume_device, force)
-    
+
     if not quick:
         state = ''
         while state != u'available':
             time.sleep(5)
             state = conn.get_all_volumes(volume_ids=volume_id)[0].volume_state()
             print "Volume state: %s" % (state)
-            
+
     return
-    
-    
+
+
 def run_shell_command_on_instance(region = None, instance_name = None, cmd_line = None, user_name = None):
     '''Run shell command on EC2 instance.'''
 
@@ -248,8 +248,8 @@ def run_shell_command_on_instance(region = None, instance_name = None, cmd_line 
         region = EC2CFG['DEFAULT_REGION']
     if user_name is None or region == '':
         user_name = EC2CFG['DEFAULT_USER_NAME']
-        
-    # connect to region    
+
+    # connect to region
     conn = get_connection(region)
 
     # get the instance object related to instance name
@@ -258,7 +258,7 @@ def run_shell_command_on_instance(region = None, instance_name = None, cmd_line 
 
     # create an SSH client for this instance
     ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name=user_name)
-    
+
     # run the command and get the results
     status, stdout, stderr = ssh_client.run(cmd_line)
 
@@ -282,7 +282,7 @@ def get_file_from_instance(region = None, instance_name = None, src = None, dst 
 
     # create an SSH client for this instance
     ssh_client = sshclient_from_instance(instance, EC2CFG['PEM'][region], user_name=user_name)
-    
+
     # get file from instance
     ssh_client.get_file(src, dst)
 
@@ -298,12 +298,12 @@ def download_from_instance(region = None, instance_name = None, src = None, dst 
         user_name = EC2CFG['DEFAULT_USER_NAME']
 
     # get public_dns_name related to instance name
-    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
-    
+    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name']
+
     # download the file
     cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
     os.system(cmd)
-    
+
     cmd = 'scp -o StrictHostKeyChecking=no -r -i {0} {1}@{2}:{3} {4}'.format(EC2CFG['PEM'][region], user_name, public_dns_name, src, dst)
     os.system(cmd)
 
@@ -319,12 +319,12 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
         user_name = EC2CFG['DEFAULT_USER_NAME']
 
     # get public_dns_name related to instance name
-    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name'] 
-    
+    public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name']
+
     # upload the file
     cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
     os.system(cmd)
-    
+
     cmd = 'scp -o StrictHostKeyChecking=no -r -i {0} {1} {2}@{3}:{4}'.format(EC2CFG['PEM'][region], src, user_name, public_dns_name, dst)
     os.system(cmd)
 
@@ -338,19 +338,19 @@ def run_instant_command_on_instance(region = None, instance_name = None, user_na
         region = EC2CFG['DEFAULT_REGION']
     if user_name is None or region == '':
         user_name = EC2CFG['DEFAULT_USER_NAME']
-        
+
     if isinstance(timeout, int) and timeout > 0:
         cmd_timeout = '-o ConnectTimeout={0}'.format(timeout)
     else:
         cmd_timeout = ''
-        
+
     # get public_dns_name related to instance name
     public_dns_name = get_instance_info_by_name(region=region, instance_name=instance_name)['public_dns_name']
-    
+
     # check the connection
     cmd = 'ssh-keygen -q -R {0} >/dev/null 2>&1'.format(public_dns_name)
     os.system(cmd)
-    
+
     cmd = 'ssh -o StrictHostKeyChecking=no {0} -i {1} {2}@{3} \'{4}\''.format(cmd_timeout, EC2CFG['PEM'][region], user_name, public_dns_name, command)
     status = os.system(cmd)
 
@@ -358,7 +358,7 @@ def run_instant_command_on_instance(region = None, instance_name = None, user_na
 
 
 def create_volume(region = None, availability_zone = None, volume_type = None, volume_size = None, iops = None):
-    
+
     # set default values
     if region is None or region == '': region = EC2CFG['DEFAULT_REGION']
     if availability_zone is None or region == '': availability_zone = region + 'a'
@@ -373,36 +373,36 @@ def create_volume(region = None, availability_zone = None, volume_type = None, v
         else:
             print 'Warning: the volume_size you provisioned "{0}" has been converted as integer "{1}".'.format(volume_size, converted_value)
             volume_size = converted_value
-            
+
     # connect to region
     conn = get_connection(region)
-    
+
     # create volume and tags
     print 'Creating volume: Type="{0}", Size={1}GiB, IOPS={2} in availability zone "{3}"...'.format(volume_type, int(volume_size), iops, availability_zone)
-    volume = conn.create_volume(size = int(volume_size), zone = availability_zone, 
+    volume = conn.create_volume(size = int(volume_size), zone = availability_zone,
                                 volume_type = volume_type, iops = iops)
-    
+
     print 'Creating tag for volume {0}...'.format(volume.id)
     conn.create_tags(volume.id, {"Name": 'cheshi-volume-autotest'})
-    
+
     print 'Wait 20 seconds for the volume become available...'
     time.sleep(20)
-    
+
     return volume
-    
-    
+
+
 def delete_volume(region = None, volume_id = None):
-    
+
     # set default values
     if region is None or region == '': region = EC2CFG['DEFAULT_REGION']
 
     # connect to region
     conn = get_connection(region)
-    
+
     # delete volume
     print 'Deleting volume: {0}...'.format(volume_id)
     result = conn.delete_volume(volume_id)
-    
+
     return result
 
 

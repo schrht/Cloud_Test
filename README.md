@@ -92,17 +92,17 @@ $ Cloud_Test/test_suites/RHEL7-88713/run.py
 ......
 
 $ ./test_suites/utils/summary.sh path_to_log/RHEL7-88713/
-** VMSize       DiskType   I/OMode    BS     IODepth   Format    BW(KB/s)     IOPS    
-** m4.16xlarge  st1        write      1024k  1         raw       544608       531     
-** m4.16xlarge  st1        read       1024k  1         raw       551688       538     
-** m4.16xlarge  sc1        write      1024k  1         raw       274766       268     
-** m4.16xlarge  sc1        read       1024k  1         raw       273452       267     
-** m4.16xlarge  io1        randwrite  256k   1         raw       338706       1323    
-** m4.16xlarge  io1        randwrite  16k    1         raw       219207       13700   
-** m4.16xlarge  io1        randread   256k   1         raw       340829       1331    
-** m4.16xlarge  io1        randread   16k    1         raw       331893       20743   
-** m4.16xlarge  gp2        randwrite  256k   1         raw       168891       659     
-** m4.16xlarge  gp2        randwrite  16k    1         raw       164945       10309   
-** m4.16xlarge  gp2        randread   256k   1         raw       169929       663     
-** m4.16xlarge  gp2        randread   16k    1         raw       165946       10371   
+** VMSize       DiskType   I/OMode    BS     IODepth   Format    BW(KB/s)     IOPS
+** m4.16xlarge  st1        write      1024k  1         raw       544608       531
+** m4.16xlarge  st1        read       1024k  1         raw       551688       538
+** m4.16xlarge  sc1        write      1024k  1         raw       274766       268
+** m4.16xlarge  sc1        read       1024k  1         raw       273452       267
+** m4.16xlarge  io1        randwrite  256k   1         raw       338706       1323
+** m4.16xlarge  io1        randwrite  16k    1         raw       219207       13700
+** m4.16xlarge  io1        randread   256k   1         raw       340829       1331
+** m4.16xlarge  io1        randread   16k    1         raw       331893       20743
+** m4.16xlarge  gp2        randwrite  256k   1         raw       168891       659
+** m4.16xlarge  gp2        randwrite  16k    1         raw       164945       10309
+** m4.16xlarge  gp2        randread   256k   1         raw       169929       663
+** m4.16xlarge  gp2        randread   16k    1         raw       165946       10371
 

@@ -15,7 +15,7 @@ printf "** %-12s %-10s %-20s\n" VMSize Method $service
 for file in $filelist; do
 	vmsize=$(echo $file | cut -d_ -f3)
 	method=$(echo $file | cut -d_ -f4)
-	
+
 	# TARGET: "        26.251s kdump.service"
 	boot_time=$(grep " $service" $file | awk '{print $1}')
 

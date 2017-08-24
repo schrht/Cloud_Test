@@ -13,7 +13,7 @@ function show(){
 	fi
 	echo -e "---------------"; shift
 	$@ 2>&1
-} 
+}
 
 
 show "Time" date

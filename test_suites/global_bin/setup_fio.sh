@@ -10,7 +10,7 @@ cd ~/workspace
 type fio >/dev/null 2>&1 && echo "Already Installed." && exit 0
 
 if [ "$(os_type.sh)" = "redhat" ]; then
-	
+
 	# install for redhat
 	sudo yum install -y wget libaio-devel
 

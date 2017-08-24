@@ -28,7 +28,7 @@ def run_test(instance_name, instance_type=None):
     # prepare
     print 'Preparing environment...'
     prepare_on_instance(TSCFG, instance_name)
-    
+
     # run test
 #    for volume in TSCFG['ATTACHED_VOLUME_IDS']:
 #        volume_id = volume.split(';')[0]
@@ -38,7 +38,7 @@ def run_test(instance_name, instance_type=None):
     for volume_type in ('gp2', 'io1', 'st1', 'sc1'):
 
         iops = None
-        
+
         if volume_type == 'gp2':
             # define gp2 volume
             volume_size = 3334
@@ -47,7 +47,7 @@ def run_test(instance_name, instance_type=None):
             # define io1 volume
             volume_size = 400
             iops = 20000
-            
+
         if volume_type == 'st1':
             # define st1 volume
             volume_size = 12.5 * 1024
@@ -58,54 +58,54 @@ def run_test(instance_name, instance_type=None):
 
         # create the volume
         volume = create_volume(volume_type=volume_type, volume_size=volume_size, iops=iops)
-        
+
         # attach the volume
         print 'Attaching test volume...'
         attach_volume_to_instance(region=TSCFG['REGION'], instance_name=instance_name,
                                   volume_id=volume.id, volume_delete_on_termination=True)
-        
+
         # test the volume
-        print 'Running test on instance...'        
-        result = run_shell_command_on_instance(region=TSCFG['REGION'], 
-                                               instance_name=instance_name, 
-                                               user_name=TSCFG['USER_NAME'], 
+        print 'Running test on instance...'
+        result = run_shell_command_on_instance(region=TSCFG['REGION'],
+                                               instance_name=instance_name,
+                                               user_name=TSCFG['USER_NAME'],
                                                cmd_line='/bin/bash ~/workspace/bin/test.sh ' + volume_type)
         #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
-        
+
         # detach the volume
         print 'Detaching test volume...'
         detach_volume_from_instance(region=TSCFG['REGION'], instance_name=instance_name,
                                   volume_id=volume.id, force=True)
-        
+
         # delete the volume
         delete_volume(volume_id=volume.id)
-    
+
     # get log
     print 'Getting log files...'
     collect_log_from_instance(TSCFG, instance_name)
-    
+
     return
 
 
 def test(instance_type):
     '''test on specific instance type'''
-    
+
     instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + str(random.randint(10000000, 99999999))
 
     try:
         create_instance(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
                         image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
-        
+
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
 
         print 'Start to run test on {0}...'.format(instance_type)
         run_test(instance_name, instance_type)
         print 'Test on instance type "{0}" finished.'.format(instance_type)
- 
+
     except Exception, e:
         print 'Failed!'
         print '----------\n', e, '\n----------'
-    
+
     finally:
         terminate_instance(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
 
@@ -116,14 +116,14 @@ def test(instance_type):
 TSCFG = load_tscfg('./configure.json')
 
 if __name__ == '__main__':
-    
+
     print 'TSCFG = ', TSCFG
 
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         test(instance_type)
-    
+
     #run_test('cheshi-storage-test')
-    
+
     print 'Job finished!'
 
-    
+

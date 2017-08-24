@@ -6,7 +6,7 @@ APIVERSION="2017-03-01"
 function print_help()
 {
 echo "azure-metadata v1.0
-Use to retrieve Azure instance metadata from within a running Azure VM in Resource Manager mode. 
+Use to retrieve Azure instance metadata from within a running Azure VM in Resource Manager mode.
 e.g. to retrieve instance id: azure-metadata -i
 		 to retrieve ami id: azure-metadata -a
 		 to get help: azure-metadata --help
@@ -112,7 +112,7 @@ while [ "$1" != "" ]; do
 								 exit
 																 ;;
 	--all )                        print_all
-								 exit 
+								 exit
 																 ;;
 	* )                            print_help
 								 exit 1
