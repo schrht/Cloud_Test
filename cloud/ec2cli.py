@@ -12,6 +12,9 @@ import json
 import boto.ec2
 from boto.manage.cmdshell import sshclient_from_instance
 
+import boto3
+from botocore.exceptions import ClientError
+
 
 def load_ec2cfg():
     '''load ec2 configuration'''
@@ -404,6 +407,187 @@ def delete_volume(region = None, volume_id = None):
     result = conn.delete_volume(volume_id)
 
     return result
+
+
+def create_placement_group(pg_name):
+    '''Create a placement group.
+    Parameters:
+        pg_name: str, group name
+    Reture values:
+        None
+    '''
+
+    ec2 = boto3.client('ec2')
+
+    try:
+        ec2.create_placement_group(GroupName=pg_name, Strategy='cluster')
+    except ClientError as e:
+        if 'InvalidPlacementGroup.Duplicate' in str(e):
+            print e
+            return None
+        else:
+            print e
+            raise
+
+    return None
+
+
+def delete_placement_group(pg_name):
+    '''Delete a placement group.
+    Parameters:
+        pg_name: str, group name
+    Reture values:
+        None
+    '''
+
+    ec2 = boto3.client('ec2')
+
+    try:
+        ec2.delete_placement_group(GroupName=pg_name)
+    except ClientError as e:
+        if 'InvalidPlacementGroup.Unknown' in str(e):
+            print e
+        if 'InvalidPlacementGroup.InUse' in str(e):
+            print e
+        else:
+            print e
+            raise
+
+    return None
+
+
+def create_clustered_instances(region = None, pg_name = '', instance_names = [], image_id = '',
+                               instance_type = '', key_name = 'cheshi', security_group_ids = [],
+                               subnet_id = None, private_ip_address = None, ebs_optimized = False):
+    '''Create clustered EC2 instance.
+    Parameters:
+        pg_name        : str, the name of placement group for creating instances in.
+        instance_names : list, the list of instnace name for creating instances.
+        ......
+    Reture values:
+        None
+    '''
+    # check inputs
+    if len(instance_names) < 2:
+        print 'The length of instance_names must be 2 at least.'
+
+    # connect to resource
+    ec2 = boto3.resource('ec2')
+
+    # check if instance already exists
+    instance_iterator = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': instance_names}])
+    instance_list = list(instance_iterator)
+
+    if instance_list:
+        for instance in instance_list:
+            print '%s, known as %s, already exists.' % (instance, [x['Value'] for x in instance.tags if x['Key'] == 'Name'])
+        print 'Exit without creating any instance.'
+        return False
+
+    # launch instance
+    print '1. Creating instance: %s' % (instance_names)
+
+    kwargs = {}
+    kwargs['ImageId'] = image_id
+    kwargs['InstanceType'] = instance_type
+    kwargs['KeyName'] = key_name
+    kwargs['SecurityGroupIds'] = security_group_ids
+    #kwargs['SubnetId'] = subnet_id
+    #kwargs['PrivateIpAddress'] = private_ip_address
+
+    kwargs['MinCount'] = kwargs['MaxCount'] = len(instance_names)
+    kwargs['Placement'] = {'GroupName': pg_name}
+    kwargs['EbsOptimized'] = ebs_optimized
+
+    print 'kwargs = %s' % (kwargs)
+
+    try:
+        instance_list = ec2.create_instances(DryRun = True, **kwargs)
+    except ClientError as e:
+        if 'DryRunOperation' not in str(e):
+            print e
+            raise
+
+    try:
+        instance_list = ec2.create_instances(**kwargs)
+        print(instance_list)
+    except ClientError as e:
+        print e
+        raise
+
+    # set instance name
+    print '2. Creating tag as instance name'
+
+    for (instance, instance_name) in zip(instance_list, instance_names):
+        print '%s {\'Name\': %s}' % (instance, instance_name)
+        ec2.create_tags(Resources = [instance.id], Tags = [{'Key': 'Name', 'Value': instance_name}])
+
+    # waiting for running
+    print '3. Waiting instance state become running'
+    for instance in instance_list:
+        instance.wait_until_running()
+
+    print 'create_clustered_instances() finished'
+    return True
+
+
+def terminate_clustered_instances(region = None, instance_names = None, pg_name = None, quick = False):
+    '''Terminate clustered EC2 instance.
+    Parameters:
+        pg_name        : str, group name (terminating all the instances in this group), or
+        instance_names : list, instnace name list to be terminated.
+        quick          : flag, without waiting for the instance state become terminated.
+    Return values:
+        None
+    '''
+
+    # check inputs
+    if pg_name and instance_names:
+        print 'pg_name and instance_names can not be specified at once.'
+        return False
+    elif not pg_name and not instance_names:
+        print 'one of pg_name and instance_names should be specified.'
+        return False
+
+    # connect to resource
+    ec2 = boto3.resource('ec2')
+
+    # get instance list
+    print '1. Collecting instance'
+    if pg_name:
+        instance_iterator = ec2.PlacementGroup(pg_name).instances.all()
+    else:
+        instance_iterator = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': instance_names}])
+
+    instance_list = list(instance_iterator)
+    print 'Instance list to be terminated: %s' % instance_list
+
+    # terminate instance
+    print '2. Terminating instance'
+    for instance in instance_list:
+        print 'Terminating %s...' % instance
+
+        try:
+            instance.terminate(DryRun=False)
+        except ClientError as e:
+            if 'DryRunOperation' not in str(e):
+                print e
+                raise
+
+        try:
+            instance.terminate()
+        except ClientError as e:
+            print e
+            raise
+
+    if not quick and instance_list:
+        print '3. Waiting instance state become terminated'
+        for instance in instance_list:
+            instance.wait_until_terminated()
+
+    print 'terminate_clustered_instances() finished'
+
+    return None
 
 
 # Load EC2 Configuration
