@@ -30,12 +30,15 @@ function run_cmd(){
 	eval $1 >> $logfile 2>&1
 }
 
-echo -e "\n\nTest Results:\n===============\n" >> $logfile
-
 run_cmd 'setup_iperf3.sh'
 
-run_cmd 'sudo ifconfig eth0 mtu 9000'	# adjust MTU
+echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
+#run_cmd 'sudo ifconfig eth0 mtu 9000'	# adjust MTU
+
+run_cmd 'ip addr'
+
+run_cmd 'modinfo ena'
 run_cmd 'ethtool -i eth0'
 run_cmd 'ethtool -k eth0'
 
@@ -45,10 +48,16 @@ if [ "$1" = "" ]; then
 	exit 0
 else
 	# client side ("$1" is server's ip)
-	iperf_client.sh $logfile $1 '128k' '1'
-	iperf_client.sh $logfile $1 '128k' '64'
-	iperf_client.sh $logfile $1 '1m' '1'
-	iperf_client.sh $logfile $1 '1m' '64'
+	#iperf_client.sh $logfile $1 '128k' '1'
+	#iperf_client.sh $logfile $1 '128k' '64'
+	#iperf_client.sh $logfile $1 '1m' '1'
+	#iperf_client.sh $logfile $1 '1m' '64'
+
+	run_cmd "tracepath $1"
+	run_cmd "ping -c 10 $1"
+	run_cmd 'ethtool -S eth0'
+	iperf_client.sh $logfile $1 '128k' '32'
+	run_cmd 'ethtool -S eth0'
 fi
 
 # teardown
