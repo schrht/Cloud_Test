@@ -5,7 +5,7 @@
     "REGION": "ap-northeast-1",
     "USER_NAME": "ec2-user",
 
-    "IMAGE_ID": "ami-3901e15f",
+    "IMAGE_ID": "ami-30ef0556",
     "SUBNET_ID": "subnet-989a6bef",
     "SECURITY_GROUP_IDS": [
         "sg-010ffc67"
