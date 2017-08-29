@@ -29,7 +29,7 @@ show "" cat /proc/cmdline
 show "" systemd-analyze
 
 show "" lsblk -p
-show "" ifconfig -a
+show "" ip addr
 show "Metadata" metadata.sh
 
 exit 0
