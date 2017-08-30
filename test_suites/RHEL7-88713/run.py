@@ -32,21 +32,22 @@ def run_test(instance_name, instance_type=None):
     # run test
     print 'Running test on instance...'
 
-    ## start server
+    ## get ip address
+    server_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-s')['private_ip_address']
+    client_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-c')['private_ip_address']
+
+    ## run on server
     result = run_shell_command_on_instance(region=TSCFG['REGION'],
                                            instance_name=instance_name+'-s',
                                            user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh')
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh server {0}'.format(client_ip))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
-    ## get server's ip
-    server_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-s')['private_ip_address']
-
-    ## start client to run test
+    ## run on client
     result = run_shell_command_on_instance(region=TSCFG['REGION'],
                                            instance_name=instance_name+'-c',
                                            user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh {0}'.format(server_ip))
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh client {0}'.format(server_ip))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     # get log
@@ -85,7 +86,6 @@ def test(instance_type):
     finally:
         terminate_clustered_instances(region=TSCFG['REGION'], pg_name=pg_name, quick=False)
         delete_placement_group(pg_name=pg_name)
-        pass
 
     return
 
@@ -102,8 +102,6 @@ if __name__ == '__main__':
 
     #test('m4.16xlarge')
     #run_test('cheshi-network-test')
-
-    #terminate_clustered_instances(pg_name='rhel7-88713-pg-cluster-87294099')
 
     print 'Job finished!'
 

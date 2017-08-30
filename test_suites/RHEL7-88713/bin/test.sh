@@ -2,27 +2,39 @@
 
 # Description:
 # Trigger iperf3 for network performance test.
-# $1: "" for server
-#     "server's ip" for client
+# $1: role; "client" or "server"
+# $2: the ip address of mated system
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # setup
 setup.sh
 
-if [ "$1" = "" ]; then
-	label="server"
+# parameters
+if [ "$1" != "client" ] && [ "$1" != "server" ]; then
+	echo "\$1, represents the role, should be \"client\" or \"server\"."
+	exit 1
 else
-	label="client"
+	label="$1"
 fi
-inst_type=$(ec2-metadata -t | awk '{print $2}')
-time_stamp=$(date +%y%m%d%H%M%S)
+
+if [ -z "$2" ]; then
+	echo "\$2, specify the ip address, must be provisioned."
+	exit 1
+else
+	ip="$2"
+fi
+
+# set the log name
+inst_type=$(metadata.sh -t | awk '{print $2}')
+time_stamp=$(timestamp.sh)
 logfile=~/workspace/log/network_performance_${inst_type}_${label}_${time_stamp}.log
 
 # log the informaiton
 show_info.sh >> $logfile 2>&1
 
-# perform this test
+# perform test
+
 function run_cmd(){
 	# $1: Command
 
@@ -36,27 +48,39 @@ echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
 #run_cmd 'sudo ifconfig eth0 mtu 9000'	# adjust MTU
 
+# basic information
 run_cmd 'ip addr'
-
-run_cmd 'modinfo ena'
 run_cmd 'ethtool -i eth0'
+
+# driver
+driver=$(ethtool -i eth0 | grep "^driver:" | awk '{print $2}')
+echo -e "\nThe dirver of \"eth0\" is \"$driver\".\n" >> $logfile
+run_cmd "modinfo $driver"
+
+# features
 run_cmd 'ethtool -k eth0'
 
-if [ "$1" = "" ]; then
-	# server side
-	run_cmd 'sudo iperf3 -s -D'	# server started as demon
+# statistics
+run_cmd 'ethtool -S eth0'
+
+# connectivity
+run_cmd "ping -c 8 $ip"
+run_cmd "tracepath $ip"
+
+# performance test
+if [ "$label" = "server" ]; then
+	# start server as demon
+	run_cmd 'sudo iperf3 -s -D'
+
+	# exit without teardown
 	exit 0
 else
-	# client side ("$1" is server's ip)
-	#iperf_client.sh $logfile $1 '128k' '1'
-	#iperf_client.sh $logfile $1 '128k' '64'
-	#iperf_client.sh $logfile $1 '1m' '1'
-	#iperf_client.sh $logfile $1 '1m' '64'
+	# iperf test on client
 
-	run_cmd "tracepath $1"
-	run_cmd "ping -c 10 $1"
-	run_cmd 'ethtool -S eth0'
-	iperf_client.sh $logfile $1 '128k' '32'
+	#iperf_client.sh <logfile> <driver> <ip> <protocol> <buffer> <pclient> <time>
+	iperf_client.sh $logfile $driver $ip tcp 128k 32 60
+
+	# check the statistics again
 	run_cmd 'ethtool -S eth0'
 fi
 
