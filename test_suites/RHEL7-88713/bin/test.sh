@@ -60,25 +60,27 @@ run_cmd "modinfo $driver"
 # features
 run_cmd 'ethtool -k eth0'
 
-# statistics
-run_cmd 'ethtool -S eth0'
-
 # connectivity
 run_cmd "ping -c 8 $ip"
 run_cmd "tracepath $ip"
 
+# statistics
+run_cmd 'ethtool -S eth0'
+
 # performance test
 if [ "$label" = "server" ]; then
-	# start server as demon
-	run_cmd 'sudo iperf3 -s -D'
+	# start server
+	
+	echo -e "\nStart server:\n--------------------" >> $logfile
+	iperf_server.sh $logfile 32
 
 	# exit without teardown
 	exit 0
 else
 	# iperf test on client
 
-	#iperf_client.sh <logfile> <driver> <ip> <protocol> <buffer> <pclient> <time>
-	iperf_client.sh $logfile $driver $ip tcp 128k 32 60
+	# Usage: iperf_client.sh <logfile> <driver> <process> <ip> <protocol> <buffer> <pclient> <time>
+	iperf_client.sh $logfile $driver 8 $ip tcp 128k 32 60
 
 	# check the statistics again
 	run_cmd 'ethtool -S eth0'
