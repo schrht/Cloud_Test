@@ -58,8 +58,8 @@ BWrx=$(grep "\[SUM\].*receiver" $tlog | awk '{SUM += $6};END {print SUM}')
 
 # Write down a summary
 echo -e "\nTest Summary: \n----------\n" >> $tlog
-printf "** %-12s %-10s %-8s %-8s %-6s %-7s %-10s %-10s\n" VMSize Interface Driver Protocol Buffer PClient "BWtx(Mb/s)" "BWrx(Mb/s)" >> $tlog
-printf "** %-12s %-10s %-8s %-8s %-6s %-7s %-10s %-10s\n" $vmsize $iface $driver $protocol $len $pc $BWtx $BWrx >> $tlog
+printf "** %-12s %-10s %-8s %-8s %-7s %-7s %-6s %-10s %-10s\n" VMSize Interface Driver Protocol Process PClient Buffer "BWtx(Mb/s)" "BWrx(Mb/s)" >> $tlog
+printf "** %-12s %-10s %-8s %-8s %-7s %-7s %-6s %-10s %-10s\n" $vmsize $iface $driver $protocol $pnum $pc $len $BWtx $BWrx >> $tlog
 
 # Save to log file
 cat $tlog >> $logfile && rm $tlog
