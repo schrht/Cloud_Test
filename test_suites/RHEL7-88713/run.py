@@ -76,7 +76,8 @@ def test(instance_type):
         create_placement_group(pg_name=pg_name)
         create_clustered_instances(region=TSCFG['REGION'], pg_name=pg_name, instance_names=instance_names,
                                    image_id=TSCFG['IMAGE_ID'], instance_type=instance_type,
-                                   security_group_ids=TSCFG['SECURITY_GROUP_IDS'], subnet_id=TSCFG['SUBNET_ID'])
+                                   security_group_ids=TSCFG['SECURITY_GROUP_IDS'], subnet_id=TSCFG['SUBNET_ID'],
+                                   ipv6_address_count = 1)
 
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-s', user_name=TSCFG['USER_NAME'])
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-c', user_name=TSCFG['USER_NAME'])
