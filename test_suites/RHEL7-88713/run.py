@@ -15,6 +15,7 @@ from cloud.ec2cli import create_placement_group
 from cloud.ec2cli import delete_placement_group
 from cloud.ec2cli import create_clustered_instances
 from cloud.ec2cli import terminate_clustered_instances
+from cloud.ec2cli import get_ipv6_addresses
 
 from test_suites.func import load_tscfg
 from test_suites.func import prepare_on_instance
@@ -36,18 +37,23 @@ def run_test(instance_name, instance_type=None):
     server_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-s')['private_ip_address']
     client_ip = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-c')['private_ip_address']
 
+    response = get_ipv6_addresses(region=TSCFG['REGION'], instance_name=instance_name+'-s')
+    server_ipv6 = response[0] if response else ''
+    response = get_ipv6_addresses(region=TSCFG['REGION'], instance_name=instance_name+'-c')
+    client_ipv6 = response[0] if response else ''
+
     ## run on server
     result = run_shell_command_on_instance(region=TSCFG['REGION'],
                                            instance_name=instance_name+'-s',
                                            user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh server {0}'.format(client_ip))
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh server {0} {1}'.format(client_ip, client_ipv6))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     ## run on client
     result = run_shell_command_on_instance(region=TSCFG['REGION'],
                                            instance_name=instance_name+'-c',
                                            user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh client {0}'.format(server_ip))
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh client {0} {1}'.format(server_ip, server_ipv6))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     # get log

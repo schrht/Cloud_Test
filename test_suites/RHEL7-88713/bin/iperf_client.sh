@@ -12,15 +12,29 @@
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
+# check inputs
 vmsize=$(ec2-metadata -t | awk '{print $2}')
 iface=eth0
 driver=$2
 pnum=$3
-server_ip=$4
-protocol=$5
+ipaddr=$4
+tprot=$5
 len=$6
 pc=$7
 time=$8
+
+if [ "$tprot" != "tcp" ] && [ "$tprot" != "udp" ]; then
+	echo -e "\n$0: Invalid input: \$tprot must be \"tcp\" or \"udp\".\n" >> $1
+	exit 1
+fi
+
+if [[ "$ipaddr" =~ ":" ]]; then
+	nprot="ipv6"
+else
+	nprot="ipv4"
+fi
+
+protocol="$nprot:$tprot"
 
 # log file
 tlog=$(mktemp)
@@ -32,7 +46,7 @@ for pn in $(seq $pnum); do
 	echo -e "\nProcess $pn\n--------------------\n" >> $sub_tlog
 
 	# Set Command
-	cmd="sudo iperf3 -c $server_ip -p $((10080+$pn)) -l $len -P $pc -t $time -f m"
+	cmd="sudo iperf3 -c $ipaddr -p $((10080+$pn)) -l $len -P $pc -t $time -f m"
 
 	# Run test
 	echo -e "\n$ $cmd" >> $sub_tlog

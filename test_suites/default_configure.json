@@ -6,9 +6,9 @@
     "USER_NAME": "ec2-user",
 
     "IMAGE_ID": "ami-30ef0556",
-    "SUBNET_ID": "subnet-989a6bef",
+    "SUBNET_ID": "subnet-812033f7",
     "SECURITY_GROUP_IDS": [
-        "sg-010ffc67"
+        "sg-4381fa25"
     ],
 
     "INSTANCE_TYPE_LIST": [

@@ -458,7 +458,7 @@ def delete_placement_group(pg_name):
 
 def create_clustered_instances(region = None, pg_name = '', instance_names = [], image_id = '',
                                instance_type = '', key_name = 'cheshi', security_group_ids = [],
-                               subnet_id = None, private_ip_address = None, ebs_optimized = False):
+                               subnet_id = None, ipv6_address_count = 0, ebs_optimized = False):
     '''Create clustered EC2 instance.
     Parameters:
         pg_name        : str, the name of placement group for creating instances in.
@@ -492,9 +492,8 @@ def create_clustered_instances(region = None, pg_name = '', instance_names = [],
     kwargs['InstanceType'] = instance_type
     kwargs['KeyName'] = key_name
     kwargs['SecurityGroupIds'] = security_group_ids
-    #kwargs['SubnetId'] = subnet_id
-    #kwargs['PrivateIpAddress'] = private_ip_address
-
+    kwargs['SubnetId'] = subnet_id
+    kwargs['Ipv6AddressCount'] = ipv6_address_count
     kwargs['MinCount'] = kwargs['MaxCount'] = len(instance_names)
     kwargs['Placement'] = {'GroupName': pg_name}
     kwargs['EbsOptimized'] = ebs_optimized
@@ -590,6 +589,40 @@ def terminate_clustered_instances(region = None, instance_names = None, pg_name 
     return None
 
 
+def get_ipv6_addresses(region = None, instance_name = None):
+    '''Get IPv6 addresses from specified instance.
+    Parameters:
+        region        : string, region id.
+        instance_name : string, instnace name which specifies an instance.
+    Return values:
+        None : if the request can't be handled.
+        List : the IPv6 address list associalated with the instance.
+    Restrict:
+        The instance_name must can identify an instance.
+        The specified instance should have only one network interface, or the IPv6 address
+        in the list can belong to any one of the interfaces.
+    '''
+
+    # connect to resource
+    ec2 = boto3.resource('ec2')
+
+    # get ipv6 address
+    ipv6_list = []
+
+    instance_list = list(ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': [instance_name]}]))
+    if len(instance_list) != 1:
+        print 'Found %s instance(s) by searching tag:Name %s, the request can not be handled.' % (len(instance_list), instance_name)
+        return None
+    else:
+        instance = instance_list[0]
+
+    for interface in instance.network_interfaces_attribute:
+        for ipv6_address in interface['Ipv6Addresses']:
+            ipv6_list.append(ipv6_address['Ipv6Address'])
+
+    return ipv6_list
+
+
 # Load EC2 Configuration
 EC2CFG = load_ec2cfg()
 
@@ -597,6 +630,10 @@ if __name__ == '__main__':
 
     #print EC2CFG
     pass
+
+    #create_clustered_instances(instance_names = ['cheshi-test-2'], image_id = 'ami-30ef0556',
+    #                           instance_type = 't2.micro', key_name = 'cheshi', security_group_ids = ["sg-4381fa25"],
+    #                           subnet_id = 'subnet-812033f7', ipv6_address_count = 2, ebs_optimized = False)
 
     #create_instance(region='us-east-1', instance_name='cheshi-test-2', instance_type='t2.micro', image_id = 'ami-1fb1e109', subnet_id='subnet-73f7162b', security_group_ids=['sg-aef4fad0'])
     #print run_shell_command_on_instance(region='us-east-1', instance_name = 'cheshi-test-2', cmd_line = 'uname -r')

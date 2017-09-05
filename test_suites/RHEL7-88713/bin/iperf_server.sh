@@ -19,7 +19,7 @@ tlog=$(mktemp)
 logfile=$1
 
 # stop previous server
-#sudo kill $(pidof iperf3) 
+#sudo kill $(pidof iperf3)
 
 # start server
 for pn in $(seq $process_number); do
