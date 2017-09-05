@@ -456,20 +456,29 @@ def delete_placement_group(pg_name):
     return None
 
 
-def create_clustered_instances(region = None, pg_name = '', instance_names = [], image_id = '',
-                               instance_type = '', key_name = 'cheshi', security_group_ids = [],
-                               subnet_id = None, ipv6_address_count = 0, ebs_optimized = False):
-    '''Create clustered EC2 instance.
+def create_instances(region = None, instance_names = [], pg_name = '', image_id = '',
+                     instance_type = '', key_name = 'cheshi', security_group_ids = [],
+                     subnet_id = None, ipv6_address_count = 0, ebs_optimized = False,
+                     min_count = 1, max_count = 1):
+    '''Create EC2 instance.
     Parameters:
-        pg_name        : str, the name of placement group for creating instances in.
+        region         : string, the AWS region.
         instance_names : list, the list of instnace name for creating instances.
+        pg_name        : string, the name of placement group for creating instances in.
         ......
     Reture values:
-        None
+        True  : if request succeed.
+        False : if request failed.
     '''
+
     # check inputs
-    if len(instance_names) < 2:
-        print 'The length of instance_names must be 2 at least.'
+    if min_count > max_count:
+        print 'Invalid Inputs: parameter "min_count" ({0}) can not be greater than "max_count" ({1}).'.format(min_count, max_count)
+        return False
+
+    if len(instance_names) != max_count:
+        print 'Invalid Inputs: parameter "instance_names" provided {0} name(s), however "max_count" ({1}) name(s) are required.'.format(len(instance_names), max_count)
+        return False
 
     # connect to resource
     ec2 = boto3.resource('ec2')
@@ -494,7 +503,8 @@ def create_clustered_instances(region = None, pg_name = '', instance_names = [],
     kwargs['SecurityGroupIds'] = security_group_ids
     kwargs['SubnetId'] = subnet_id
     kwargs['Ipv6AddressCount'] = ipv6_address_count
-    kwargs['MinCount'] = kwargs['MaxCount'] = len(instance_names)
+    kwargs['MinCount'] = min_count
+    kwargs['MaxCount'] = max_count
     kwargs['Placement'] = {'GroupName': pg_name}
     kwargs['EbsOptimized'] = ebs_optimized
 
@@ -505,13 +515,12 @@ def create_clustered_instances(region = None, pg_name = '', instance_names = [],
     except ClientError as e:
         if 'DryRunOperation' not in str(e):
             print e
-            raise
+            return False
 
     try:
         instance_list = ec2.create_instances(**kwargs)
         print(instance_list)
     except ClientError as e:
-        print e
         raise
 
     # set instance name
@@ -526,8 +535,28 @@ def create_clustered_instances(region = None, pg_name = '', instance_names = [],
     for instance in instance_list:
         instance.wait_until_running()
 
-    print 'create_clustered_instances() finished'
+    print 'create_instances() finished'
     return True
+
+
+def create_clustered_instances(pg_name = '', min_count = 2, max_count = 2, **kwargs):
+    '''Create clustered EC2 instance.'''
+
+    # check inputs
+    if not pg_name:
+        print 'Invalid Inputs: parameter "pg_name" must be provisioned for clustered instance.'
+        return False
+
+    if min_count < 2:
+        print 'Invalid Inputs: parameter "min_count" ({0}) should be 2 at least for clustered instance.'.format(min_count)
+        return False
+
+    if max_count < 2:
+        print 'Invalid Inputs: parameter "max_count" ({0}) should be 2 at least for clustered instance.'.format(max_count)
+        return False
+
+    # call create_instances() to handle request
+    return create_instances(pg_name = pg_name, min_count = min_count, max_count = max_count, **kwargs)
 
 
 def terminate_clustered_instances(region = None, instance_names = None, pg_name = None, quick = False):
