@@ -67,8 +67,8 @@ cat ${tlog}-* > $tlog && rm ${tlog}-*
 # [SUM]   0.00-60.00  sec  6.72 GBytes   962 Mbits/sec  40239             sender
 # [SUM]   0.00-60.00  sec  8.43 GBytes  1207 Mbits/sec  16725             sender
 
-BWtx=$(grep "\[SUM\].*sender" $tlog | awk '{SUM += $6};END {print SUM}')
-BWrx=$(grep "\[SUM\].*receiver" $tlog | awk '{SUM += $6};END {print SUM}')
+BWtx=$(grep "iperf Done" -B 3 $tlog | grep "sender" | awk '{SUM += $6};END {print SUM}')
+BWrx=$(grep "iperf Done" -B 3 $tlog | grep "receiver" | awk '{SUM += $6};END {print SUM}')
 
 # Write down a summary
 echo -e "\nTest Summary: \n----------\n" >> $tlog
