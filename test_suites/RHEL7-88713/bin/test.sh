@@ -64,6 +64,7 @@ run_cmd 'ethtool -i eth0'
 driver=$(ethtool -i eth0 | grep "^driver:" | awk '{print $2}')
 echo -e "\nThe dirver of \"eth0\" is \"$driver\".\n" >> $logfile
 run_cmd "modinfo $driver"
+run_cmd "dmesg|grep -w $driver"	# Added for ena dmesg
 
 # features
 run_cmd 'ethtool -k eth0'
