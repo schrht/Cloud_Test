@@ -86,12 +86,9 @@ elif [ "$mode" = "fio_script_test" ]; then
 	cd ~/workspace/bin
 
 	if [ "$disktype" = "gp2" ] || [ "$disktype" = "io1" ]; then
-		# IOPS performance hit
-		fio2.sh $logfile $disktype ebs_ssd_io_randread.fio
-		fio2.sh $logfile $disktype ebs_ssd_io_randwrite.fio
-		# BW performance hit
-		fio2.sh $logfile $disktype ebs_ssd_bw_randread.fio
-		fio2.sh $logfile $disktype ebs_ssd_bw_randwrite.fio
+		# IOPS and BW performance hit
+		fio2.sh $logfile $disktype ebs_ssd_randread.fio
+		fio2.sh $logfile $disktype ebs_ssd_randwrite.fio
 	fi
 
 	if [ "$disktype" = "st1" ] || [ "$disktype" = "sc1" ]; then
