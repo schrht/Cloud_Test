@@ -335,7 +335,7 @@ def upload_to_instance(region = None, instance_name = None, src = None, dst = No
 
 
 def run_instant_command_on_instance(region = None, instance_name = None, user_name = None, timeout = 0, command = 'uname -r'):
-    '''Upload files to EC2 instance, implemented by `scp`.'''
+    '''Run command on EC2 instance, implemented by `ssh`.'''
 
     if region is None or region == '':
         region = EC2CFG['DEFAULT_REGION']
