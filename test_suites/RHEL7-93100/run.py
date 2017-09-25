@@ -19,6 +19,33 @@ from test_suites.func import collect_log_from_instance
 from test_suites.func import waiting_for_instance_online
 
 
+def collect_boot_time(tag = 'none'):
+    '''Collect boot time, save as log.'''
+
+    waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
+
+    print 'Collect boot time...'
+    result = run_shell_command_on_instance(region=TSCFG['REGION'],
+                                           instance_name=instance_name,
+                                           user_name=TSCFG['USER_NAME'],
+                                           cmd_line='/bin/bash ~/workspace/bin/test_boot_time.sh {0}'.format(tag))
+    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+
+    return
+
+
+def reboot_the_instance():
+    '''Reboot the instance.'''
+
+    print 'Reboot the instance...'
+    result = run_shell_command_on_instance(region=TSCFG['REGION'],
+                                           instance_name=instance_name,
+                                           user_name=TSCFG['USER_NAME'],
+                                           cmd_line='sudo reboot&')
+
+    return
+
+
 def run_test(instance_name, instance_type=None):
 
     # prepare
@@ -28,27 +55,17 @@ def run_test(instance_name, instance_type=None):
     # run test
     print 'Running test on instance...'
 
-    print 'Collect bootup time...'
-    result = run_shell_command_on_instance(region=TSCFG['REGION'],
-                                           instance_name=instance_name,
-                                           user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh create')
-    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+    # instance create time
+    collect_boot_time('create')
 
-    print 'Reboot the instance...'
-    result = run_shell_command_on_instance(region=TSCFG['REGION'],
-                                           instance_name=instance_name,
-                                           user_name=TSCFG['USER_NAME'],
-                                           cmd_line='sudo reboot&')
+    # instance reboot time
+    reboot_the_instance()
+    collect_boot_time('reboot')
 
-    waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
-
-    print 'Collect bootup time...'
-    result = run_shell_command_on_instance(region=TSCFG['REGION'],
-                                           instance_name=instance_name,
-                                           user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test.sh reboot')
-    #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
+    # Additional instance reboot time
+    #for i in range(1,3):
+    #    reboot_the_instance()
+    #    collect_boot_time('reboot{0}'.format(i))
 
     # get log
     print 'Getting log files...'
