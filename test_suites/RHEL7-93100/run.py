@@ -19,22 +19,22 @@ from test_suites.func import collect_log_from_instance
 from test_suites.func import waiting_for_instance_online
 
 
-def collect_boot_time(tag = 'none'):
-    '''Collect boot time, save as log.'''
+def collect_information(instance_name, tag = 'none'):
+    '''Collect the information.'''
 
     waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
 
-    print 'Collect boot time...'
+    print 'Collect boot time and resource information...'
     result = run_shell_command_on_instance(region=TSCFG['REGION'],
                                            instance_name=instance_name,
                                            user_name=TSCFG['USER_NAME'],
-                                           cmd_line='/bin/bash ~/workspace/bin/test_boot_time.sh {0}'.format(tag))
+                                           cmd_line='/bin/bash ~/workspace/bin/test.sh {0}'.format(tag))
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     return
 
 
-def reboot_the_instance():
+def reboot_the_instance(instance_name):
     '''Reboot the instance.'''
 
     print 'Reboot the instance...'
@@ -56,16 +56,16 @@ def run_test(instance_name, instance_type=None):
     print 'Running test on instance...'
 
     # instance create time
-    collect_boot_time('create')
+    collect_information(instance_name, 'create')
 
     # instance reboot time
-    reboot_the_instance()
-    collect_boot_time('reboot')
+    reboot_the_instance(instance_name)
+    collect_information(instance_name, 'reboot')
 
     # Additional instance reboot time
     #for i in range(1,3):
-    #    reboot_the_instance()
-    #    collect_boot_time('reboot{0}'.format(i))
+    #    reboot_the_instance(instance_name)
+    #    collect_information(instance_name, 'reboot{0}'.format(i))
 
     # get log
     print 'Getting log files...'

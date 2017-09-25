@@ -3,11 +3,11 @@
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # setup
-setup.sh
+#setup.sh
 
 label=$1  # label: create, reboot...
-inst_type=$(ec2-metadata -t | awk '{print $2}')
-time_stamp=$(date +%y%m%d%H%M%S)
+inst_type=$(metadata.sh -t | awk '{print $2}')
+time_stamp=$(timestamp.sh)
 logfile=~/workspace/log/boot_time_${inst_type}_${label}_${time_stamp}.log
 
 # log the informaiton
@@ -15,10 +15,10 @@ show_info.sh >> $logfile 2>&1
 
 # perform this test
 function run_cmd(){
-# $1: Command
+	# $1: Command
 
-echo -e "\n$ $1" >> $logfile
-eval $1 >> $logfile 2>&1
+	echo -e "\n$ $1" >> $logfile
+	eval $1 >> $logfile 2>&1
 }
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
@@ -61,7 +61,6 @@ printf "** %-12s %-10s %-10s %-10s %-11s %-11s\n" VMSize Method Kernel Initrd Us
 printf "** %-12s %-10s %-10s %-10s %-11s %-11s\n" ${inst_type} ${label} $kernel $initrd $userspace $total >> $logfile
 
 # teardown
-teardown.sh
+#teardown.sh
 
 exit 0
-
