@@ -534,7 +534,11 @@ def create_instances(region = None, instance_names = [], pg_name = '', image_id 
     # waiting for running
     print '3. Waiting instance state become running'
     for instance in instance_list:
-        instance.wait_until_running()
+        print "{0}: Instance State: {1}".format(instance, instance.state['Name'])
+        while instance.state['Name'] == u'pending':
+            time.sleep(10)
+            instance.load()
+            print "{0}: Instance State: {1}".format(instance, instance.state['Name'])
 
     print 'create_instances() finished'
     return True
@@ -620,16 +624,13 @@ def terminate_instances(region = None, instance_name = None, instance_names = No
 
     if not quick and instance_list:
         print '3. Waiting instance state become terminated'
+
         for instance in instance_list:
-            try:
-                instance.wait_until_terminated()
-            except WaiterError as e:
-                if 'Max attempts exceeded' in str(e):
-                    print e
-                    continue
-                else:
-                    print e
-                    raise
+            print "{0}: Instance State: {1}".format(instance, instance.state['Name'])
+            while instance.state['Name'] == u'shutting-down':
+                time.sleep(20)
+                instance.load()
+                print "{0}: Instance State: {1}".format(instance, instance.state['Name'])
 
     print 'terminate_instances() finished'
 
@@ -661,7 +662,7 @@ def get_instance_by_name(region = None, instance_name = None):
 
 
 def get_ipv6_addresses(region = None, instance_name = None):
-    '''Get IPv6 addresses from specified instance.
+    '''Get IPv6 addresses from specified instance name.
     Parameters:
         region        : string, region id.
         instance_name : string, instnace name which specifies an instance.
@@ -690,7 +691,7 @@ def get_ipv6_addresses(region = None, instance_name = None):
 
 
 def get_availability_zone(region = None, instance_name = None):
-    '''Get Availability Zone from specified instance.
+    '''Get Availability Zone from specified instance name.
     Parameters:
         region        : string, region id.
         instance_name : string, instnace name which specifies an instance.
@@ -709,6 +710,33 @@ def get_availability_zone(region = None, instance_name = None):
 
     return None
 
+
+def get_instance_state(region = None, instance_name = None):
+    '''Get Instance State from specified instance name.
+    Parameters:
+        region        : string, region id.
+        instance_name : string, instnace name which specifies an instance.
+    Return values:
+        None   : if the request can't be handled.
+        String : the Instance State associalated with the instance.
+    Restrict:
+        Only one instance can be associalated with the instance_name.
+    Vavilable states:
+        0 : pending
+        16 : running
+        32 : shutting-down
+        48 : terminated
+        64 : stopping
+        80 : stopped
+    '''
+
+    # get instance object
+    instance = get_instance_by_name(region = region, instance_name = instance_name)
+    if instance:
+        # get availability zone
+        return instance.state['Name']
+
+    return None
 
 # Load EC2 Configuration
 EC2CFG = load_ec2cfg()
