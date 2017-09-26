@@ -14,6 +14,7 @@ from boto.manage.cmdshell import sshclient_from_instance
 
 import boto3
 from botocore.exceptions import ClientError
+from botocore.exceptions import WaiterError
 
 
 def load_ec2cfg():
@@ -559,35 +560,44 @@ def create_clustered_instances(pg_name = '', min_count = 2, max_count = 2, **kwa
     return create_instances(pg_name = pg_name, min_count = min_count, max_count = max_count, **kwargs)
 
 
-def terminate_clustered_instances(region = None, instance_names = None, pg_name = None, quick = False):
-    '''Terminate clustered EC2 instance.
+def terminate_instances(region = None, instance_name = None, instance_names = None, pg_name = None, quick = False):
+    '''Terminate EC2 instances.
     Parameters:
-        pg_name        : str, group name (terminating all the instances in this group), or
-        instance_names : list, instnace name list to be terminated.
+        instance_name  : str, a specific instance name, and/or
+        pg_name        : str, group name (terminating all the instances in this group), and/or
+        instance_names : list, a list of instnace name to be terminated.
         quick          : flag, without waiting for the instance state become terminated.
     Return values:
         None
     '''
 
     # check inputs
-    if pg_name and instance_names:
-        print 'pg_name and instance_names can not be specified at once.'
-        return False
-    elif not pg_name and not instance_names:
-        print 'one of pg_name and instance_names should be specified.'
-        return False
+    if not (instance_name or instance_names or pg_name):
+        print 'one of the parameter instance_name, instance_names and pg_name should be specified.'
+        return
 
     # connect to resource
     ec2 = boto3.resource('ec2')
 
     # get instance list
     print '1. Collecting instance'
+
+    instance_list = []
+
+    if instance_name:
+        instance_iterator = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': (instance_name,)}])
+        instance_list += list(instance_iterator)
+
+    if instance_names:
+        instance_iterator = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': instance_names}])
+        instance_list += list(instance_iterator)
+
     if pg_name:
         instance_iterator = ec2.PlacementGroup(pg_name).instances.all()
-    else:
-        instance_iterator = ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': instance_names}])
+        instance_list += list(instance_iterator)
 
-    instance_list = list(instance_iterator)
+    instance_list = list(set(instance_list))    # remove dupilicated items
+
     print 'Instance list to be terminated: %s' % instance_list
 
     # terminate instance
@@ -600,7 +610,7 @@ def terminate_clustered_instances(region = None, instance_names = None, pg_name 
         except ClientError as e:
             if 'DryRunOperation' not in str(e):
                 print e
-                raise
+                continue
 
         try:
             instance.terminate()
@@ -611,9 +621,17 @@ def terminate_clustered_instances(region = None, instance_names = None, pg_name 
     if not quick and instance_list:
         print '3. Waiting instance state become terminated'
         for instance in instance_list:
-            instance.wait_until_terminated()
+            try:
+                instance.wait_until_terminated()
+            except WaiterError as e:
+                if 'Max attempts exceeded' in str(e):
+                    print e
+                    continue
+                else:
+                    print e
+                    raise
 
-    print 'terminate_clustered_instances() finished'
+    print 'terminate_instances() finished'
 
     return None
 
@@ -666,7 +684,7 @@ if __name__ == '__main__':
 
     #create_instance(region='us-east-1', instance_name='cheshi-test-2', instance_type='t2.micro', image_id = 'ami-1fb1e109', subnet_id='subnet-73f7162b', security_group_ids=['sg-aef4fad0'])
     #print run_shell_command_on_instance(region='us-east-1', instance_name = 'cheshi-test-2', cmd_line = 'uname -r')
-    #terminate_instance(region='us-east-1', instance_name='cheshi-test-2')
+    terminate_instances(region = None, instance_name = 'cheshi-test-1', instance_names = ('cheshi-test-1', 'cheshi-test-2'), pg_name = 'cheshi-pg10', quick = False)
 
     #download_from_instance(instance_name='cheshi-script-test', src='/home/ec2-user/*.txt', dst='/home/cheshi/temp')
     #upload_to_instance(instance_name='cheshi-script-test', src='/home/cheshi/temp/*g', dst='/home/ec2-user')

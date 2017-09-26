@@ -9,7 +9,7 @@ import os
 sys.path.append('../../')
 from cloud.ec2cli import create_instances
 from cloud.ec2cli import run_shell_command_on_instance
-from cloud.ec2cli import terminate_instance
+from cloud.ec2cli import terminate_instances
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
 from cloud.ec2cli import attach_volume_to_instance
@@ -108,7 +108,7 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
 
     finally:
-        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
+        terminate_instances(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
 
     return
 
