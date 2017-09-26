@@ -636,6 +636,30 @@ def terminate_instances(region = None, instance_name = None, instance_names = No
     return None
 
 
+def get_instance_by_name(region = None, instance_name = None):
+    '''Get BOTO3 instance object from specified instance name.
+    Parameters:
+        region        : string, region id.
+        instance_name : string, instnace name which specifies an instance.
+    Return values:
+        None   : if the request can't be handled or nothing was found.
+        Object : the BOTO3 instance object associalated with the instance name.
+    Restrict:
+        Only one instance can be associalated with the instance_name.
+    '''
+
+    # connect to resource
+    ec2 = boto3.resource('ec2')
+
+    instance_list = list(ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': [instance_name]}]))
+    if len(instance_list) != 1:
+        print 'Found %s instance(s) by searching tag:Name %s, the request can not be handled.' % (len(instance_list), instance_name)
+        return None
+    else:
+        instance = instance_list[0]
+        return instance
+
+
 def get_ipv6_addresses(region = None, instance_name = None):
     '''Get IPv6 addresses from specified instance.
     Parameters:
@@ -646,28 +670,23 @@ def get_ipv6_addresses(region = None, instance_name = None):
         List : the IPv6 address list associalated with the instance.
     Restrict:
         The instance_name must can identify an instance.
-        The specified instance should have only one network interface, or the IPv6 address
-        in the list can belong to any one of the interfaces.
+        The instance should have only one network interface, or the IPv6 address
+        in the list can belong to any of the interfaces.
     '''
 
-    # connect to resource
-    ec2 = boto3.resource('ec2')
+    # get instance object
+    instance = get_instance_by_name(region = region, instance_name = instance_name)
+    if instance:
+        # get ipv6 address
+        ipv6_list = []
 
-    # get ipv6 address
-    ipv6_list = []
+        for interface in instance.network_interfaces_attribute:
+            for ipv6_address in interface['Ipv6Addresses']:
+                ipv6_list.append(ipv6_address['Ipv6Address'])
 
-    instance_list = list(ec2.instances.filter(Filters=[{'Name': 'tag:Name', 'Values': [instance_name]}]))
-    if len(instance_list) != 1:
-        print 'Found %s instance(s) by searching tag:Name %s, the request can not be handled.' % (len(instance_list), instance_name)
-        return None
-    else:
-        instance = instance_list[0]
+        return ipv6_list
 
-    for interface in instance.network_interfaces_attribute:
-        for ipv6_address in interface['Ipv6Addresses']:
-            ipv6_list.append(ipv6_address['Ipv6Address'])
-
-    return ipv6_list
+    return None
 
 
 # Load EC2 Configuration
