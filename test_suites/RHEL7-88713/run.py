@@ -14,7 +14,7 @@ from cloud.ec2cli import get_instance_info_by_name
 from cloud.ec2cli import create_placement_group
 from cloud.ec2cli import delete_placement_group
 from cloud.ec2cli import create_clustered_instances
-from cloud.ec2cli import terminate_clustered_instances
+from cloud.ec2cli import terminate_instances
 from cloud.ec2cli import get_ipv6_addresses
 
 from test_suites.func import load_tscfg
@@ -91,7 +91,7 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
 
     finally:
-        terminate_clustered_instances(region=TSCFG['REGION'], pg_name=pg_name, quick=False)
+        terminate_instances(region=TSCFG['REGION'], pg_name=pg_name, quick=False)
         delete_placement_group(pg_name=pg_name)
 
     return

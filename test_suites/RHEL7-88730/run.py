@@ -7,7 +7,8 @@ import random
 import os
 
 sys.path.append('../../')
-from cloud.ec2cli import create_instances, get_availability_zone
+from cloud.ec2cli import create_instances
+from cloud.ec2cli import get_availability_zone
 from cloud.ec2cli import run_shell_command_on_instance
 from cloud.ec2cli import terminate_instances
 from cloud.ec2cli import upload_to_instance

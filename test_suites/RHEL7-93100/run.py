@@ -7,9 +7,9 @@ import random
 import os
 
 sys.path.append('../../')
-from cloud.ec2cli import create_instance
+from cloud.ec2cli import create_instances
 from cloud.ec2cli import run_shell_command_on_instance
-from cloud.ec2cli import terminate_instance
+from cloud.ec2cli import terminate_instances
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
 
@@ -80,8 +80,8 @@ def test(instance_type):
     instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + str(random.randint(10000000, 99999999))
 
     try:
-        create_instance(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
-                        image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
+        create_instances(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
+                         image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
 
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
 
@@ -94,7 +94,7 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
 
     finally:
-        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
+        terminate_instances(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
 
     return
 
