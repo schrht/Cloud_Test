@@ -7,7 +7,7 @@ import random
 import os
 
 sys.path.append('../../')
-from cloud.ec2cli import create_instances
+from cloud.ec2cli import create_instances, get_availability_zone
 from cloud.ec2cli import run_shell_command_on_instance
 from cloud.ec2cli import terminate_instances
 from cloud.ec2cli import upload_to_instance
@@ -57,7 +57,9 @@ def run_test(instance_name, instance_type=None):
             volume_size = 16 * 1024
 
         # create the volume
-        volume = create_volume(volume_type=volume_type, volume_size=volume_size, iops=iops)
+        availability_zone = get_availability_zone(region=TSCFG['REGION'], instance_name=instance_name)
+        volume = create_volume(region=TSCFG['REGION'], availability_zone=availability_zone,
+                               volume_type=volume_type, volume_size=volume_size, iops=iops)
 
         # attach the volume
         print 'Attaching test volume...'
