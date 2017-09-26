@@ -669,7 +669,7 @@ def get_ipv6_addresses(region = None, instance_name = None):
         None : if the request can't be handled.
         List : the IPv6 address list associalated with the instance.
     Restrict:
-        The instance_name must can identify an instance.
+        Only one instance can be associalated with the instance_name.
         The instance should have only one network interface, or the IPv6 address
         in the list can belong to any of the interfaces.
     '''
@@ -689,6 +689,27 @@ def get_ipv6_addresses(region = None, instance_name = None):
     return None
 
 
+def get_availability_zone(region = None, instance_name = None):
+    '''Get Availability Zone from specified instance.
+    Parameters:
+        region        : string, region id.
+        instance_name : string, instnace name which specifies an instance.
+    Return values:
+        None   : if the request can't be handled.
+        String : the Availability Zone associalated with the instance.
+    Restrict:
+        Only one instance can be associalated with the instance_name.
+    '''
+
+    # get instance object
+    instance = get_instance_by_name(region = region, instance_name = instance_name)
+    if instance:
+        # get availability zone
+        return instance.placement['AvailabilityZone']
+
+    return None
+
+
 # Load EC2 Configuration
 EC2CFG = load_ec2cfg()
 
@@ -703,7 +724,8 @@ if __name__ == '__main__':
 
     #create_instance(region='us-east-1', instance_name='cheshi-test-2', instance_type='t2.micro', image_id = 'ami-1fb1e109', subnet_id='subnet-73f7162b', security_group_ids=['sg-aef4fad0'])
     #print run_shell_command_on_instance(region='us-east-1', instance_name = 'cheshi-test-2', cmd_line = 'uname -r')
-    terminate_instances(region = None, instance_name = 'cheshi-test-1', instance_names = ('cheshi-test-1', 'cheshi-test-2'), pg_name = 'cheshi-pg10', quick = False)
+    #terminate_instances(region = None, instance_name = 'cheshi-test-1', instance_names = ('cheshi-test-1', 'cheshi-test-2'), pg_name = 'cheshi-pg10', quick = False)
+    #print get_availability_zone(region = None, instance_name = 'cheshi-test-1')
 
     #download_from_instance(instance_name='cheshi-script-test', src='/home/ec2-user/*.txt', dst='/home/cheshi/temp')
     #upload_to_instance(instance_name='cheshi-script-test', src='/home/cheshi/temp/*g', dst='/home/ec2-user')
