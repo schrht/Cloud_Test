@@ -459,7 +459,7 @@ def delete_placement_group(pg_name):
 
 def create_instances(region = None, instance_names = [], pg_name = '', image_id = '',
                      instance_type = '', key_name = 'cheshi', security_group_ids = [],
-                     subnet_id = None, ipv6_address_count = 0, ebs_optimized = False,
+                     subnet_id = None, ipv6_address_count = 0, ebs_optimized = None,
                      min_count = 1, max_count = 1):
     '''Create EC2 instance.
     Parameters:
@@ -507,7 +507,8 @@ def create_instances(region = None, instance_names = [], pg_name = '', image_id 
     kwargs['MinCount'] = min_count
     kwargs['MaxCount'] = max_count
     kwargs['Placement'] = {'GroupName': pg_name}
-    kwargs['EbsOptimized'] = ebs_optimized
+    if ebs_optimized in (True, False):
+        kwargs['EbsOptimized'] = ebs_optimized
 
     print 'kwargs = %s' % (kwargs)
 
