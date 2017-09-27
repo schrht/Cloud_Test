@@ -80,7 +80,7 @@ def test(instance_type):
     instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + str(random.randint(10000000, 99999999))
 
     try:
-        create_instances(region=TSCFG['REGION'], instance_name=instance_name, instance_type=instance_type,
+        create_instances(region=TSCFG['REGION'], instance_names=(instance_name,), instance_type=instance_type,
                          image_id=TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
 
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name, user_name=TSCFG['USER_NAME'])
