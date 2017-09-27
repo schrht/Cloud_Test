@@ -32,14 +32,16 @@ tformat=raw
 tlog=$(mktemp)
 logfile=$1
 
-# When testing this case, only one volume should be attached once
-if [ "$(lsblk -d | grep -v NAME | grep -v xvda | wc -l)" != "1" ]; then
-	echo "Not only one additional volume attached, exit." && exit 1
-else
-	dev=$(lsblk -d -p --output NAME | grep -v NAME | grep -v xvda)
-fi
+# write down debug log
+echo "$0: Called by other scripts..." >> $logfile
+echo "$0: Input parameter: $@" >> $logfile
 
-filename=$dev	# raw format test
+# filename should be a disk
+filename=$(get_value filename)
+if [[ "$filename" =~ "/dev/" ]] && [ -z "$(lsblk -pd | grep $filename)" ]; then
+	echo "$0: \"$filename\" is not a disk. Exit..." >> $logfile
+	exit 1
+fi
 
 # Set Command
 cmd="sudo fio $script"
