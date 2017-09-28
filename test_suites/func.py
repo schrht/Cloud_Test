@@ -11,6 +11,7 @@ from cloud.ec2cli import run_instant_command_on_instance
 from cloud.ec2cli import run_shell_command_on_instance
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
+from cloud.ec2cli import get_instance_state
 
 
 def byteify(inputs):
@@ -79,6 +80,13 @@ def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', t
     Retrun Value:
         bool, represents the SSH connectivity
     '''
+
+    state = get_instance_state(instance_name = instance_name)
+    print 'Current instance state is {0}'.format(state)
+
+    if state != 'running':
+        print 'Target instance not in running state, exit now.'
+        return False
 
     result_code = 1
     start_time = time.time()
