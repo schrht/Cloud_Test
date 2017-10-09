@@ -53,6 +53,10 @@ echo -e "\nTest Summary: \n----------\n" >> $logfile
 printf "** %-12s %-5s %-12s %-12s\n" VMSize "CPU#" "MemSize(kB)" Flags >> $logfile
 printf "** %-12s %-5s %-12s %-12s\n" $inst_type $CPU $MEM $FLAGS >> $logfile
 
+# Additional validation
+run_cmd 'sudo virt-what'
+
+
 # teardown
 #teardown.sh
 
