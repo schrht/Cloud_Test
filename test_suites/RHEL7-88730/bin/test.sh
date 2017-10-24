@@ -97,6 +97,13 @@ elif [ "$mode" = "fio_script_test" ]; then
 		fio2.sh $logfile $disktype ebs_hdd_write.fio
 	fi
 
+elif [ "$mode" = "ebs_bandwidth_test" ]; then
+
+	cd ~/workspace/bin
+
+	# EBS Bandwidth Test
+	fio2.sh $logfile multi-io1 ebs_bandwidth_test.fio
+
 fi
 
 # teardown
