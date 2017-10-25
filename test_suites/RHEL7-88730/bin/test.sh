@@ -15,7 +15,7 @@ else
 fi
 
 inst_type=$(metadata.sh -t | awk '{print $2}')
-time_stamp=$(date +%y%m%d%H%M%S)
+time_stamp=$(timestamp.sh)
 logfile=~/workspace/log/storage_performance_${inst_type}_${disktype}_${time_stamp}.log
 
 # log the informaiton

@@ -3,7 +3,7 @@
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 inst_type=$(ec2-metadata -t | awk '{print $2}')
-time_stamp=$(date +%y%m%d%H%M%S)
+time_stamp=$(timestamp.sh)
 logfile=~/workspace/log/iperf3_server_${inst_type}_${time_stamp}.log
 
 setup_iperf3.sh
