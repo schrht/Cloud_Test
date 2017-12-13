@@ -58,11 +58,12 @@ vi ~/.ec2cfg.json
     "AWS_ACCESS_KEY_ID": "AAAAAAAAAAAAAAAAAAA",
     "AWS_SECRET_ACCESS_KEY": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 
-    "DEFAULT_REGION": "ap-northeast-1",
+    "DEFAULT_REGION": "us-west-2",
 
     "DEFAULT_USER_NAME": "ec2-user",
     "PEM": {
         "us-east-1": "/home/cheshi/.pem/us-east-1-cheshi.pem",
+        "us-west-2": "/home/cheshi/.pem/us-west-2-cheshi.pem",
         "ap-northeast-1": "/home/cheshi/.pem/ap-northeast-1-cheshi.pem"
     },
 

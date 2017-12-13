@@ -1,17 +1,17 @@
 {
     "CASE_ID": "RHEL7-00000",
-    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel74-test-outputs/",
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel75-test-outputs/",
 
-    "REGION": "ap-northeast-1",
+    "REGION": "us-west-2",
     "USER_NAME": "ec2-user",
 
-    "IMAGE_ID": "ami-30ef0556",
-    "SUBNET_ID": "subnet-812033f7",
+    "IMAGE_ID": "ami-c779dcbf",
+    "SUBNET_ID": "subnet-82efcce4",
     "SECURITY_GROUP_IDS": [
-        "sg-4381fa25"
+        "sg-c451f3b8"
     ],
 
     "INSTANCE_TYPE_LIST": [
-        "t2.nano"
+        "t2.micro"
     ]
 }
