@@ -15,10 +15,31 @@ show_info.sh >> $logfile 2>&1
 # perform this test
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 
-cmd='sudo grep "^" /sys/block/*/queue/discard_max_bytes'
+function run_cmd(){
+        # $1: Command
 
-echo "$ $cmd" >> $logfile
-eval $cmd >> $logfile 2>&1
+        echo -e "\n$ $1" >> $logfile
+        eval $1 >> $logfile 2>&1
+}
+
+nvme_list=$(lsblk -d -o NAME | grep nvme)
+if [ -z "$nvme_list" ]; then
+	echo "Error: No NVMe device was found, test failed!" >> $logfile
+else
+	for device in $nvme_list; do
+		echo -e "\nTRIM support? (discard_max_bytes != 0):\n" >> $logfile
+		run_cmd "sudo grep \"^\" /sys/block/$device/queue/discard_max_bytes"
+
+		echo -e "\nCreate file system on this device:\n" >> $logfile
+		run_cmd "sudo mkfs.ext4 /dev/$device"
+
+		echo -e "\nMount it and make sure trim successfully:\n" >> $logfile
+		run_cmd "sudo mkdir -p /mnt/$device"
+		run_cmd "sudo mount -t ext4 -o discard /dev/$device /mnt/$device"
+		run_cmd "sudo fstrim /mnt/$device -v"
+		run_cmd "sudo umount /dev/$device"
+	done
+fi
 
 # teardown
 teardown.sh
