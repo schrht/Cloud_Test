@@ -31,5 +31,13 @@ log_dmesg -l notice
 log_dmesg -l info
 log_dmesg -l debug
 
+# code coverage
+
+type lcov &>/dev/null
+if [ $? -eq 0 ]; then
+	logfile=~/workspace/log/lcov_${inst_type}_${inst_id}_${time_stamp}.info
+	sudo lcov -c -b /root/rpmbuild/BUILD/kernel-3.10.0-799.el7/linux-3.10.0-799.el7.x86_64/ -o $logfile
+fi
+
 exit 0
 
