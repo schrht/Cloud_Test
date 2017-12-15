@@ -22,13 +22,11 @@ function run_cmd(){
 	eval $1 >> $logfile 2>&1
 }
 
+run_cmd "sudo yum install -y pciutils"
+run_cmd "sudo yum install -y nvme-cli"
+
 run_cmd 'lspci | grep Non-Volatile'
 run_cmd 'lsmod | grep nvme'
-
-rpm -q nvme-cli.x86_64 >/dev/null 2>&1
-if [ "$?" != "0" ]; then
-	sudo yum install -y nvme-cli.x86_64
-fi
 
 run_cmd 'sudo nvme list'
 
