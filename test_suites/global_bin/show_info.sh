@@ -28,6 +28,8 @@ show "" uname -a
 show "" cat /proc/cmdline
 show "" systemd-analyze
 
+show "" cat /proc/cpuinfo
+show "" cat /proc/meminfo
 show "" lsblk -p
 show "" ip addr
 show "Metadata" metadata.sh
