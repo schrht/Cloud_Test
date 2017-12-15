@@ -36,9 +36,9 @@ run_cmd 'rpm -qa | grep kernel-tools'
 ## setup stress
 rpm -qa | grep stress >> /dev/null 2>&1
 if [ "$?" != "0" ]; then
-	sudo yum install -y wget
-	run_cmd 'wget ftp://rpmfind.net/linux/epel/7/x86_64/s/stress-1.0.4-16.el7.x86_64.rpm'
-	run_cmd 'sudo rpm -ivh stress-1.0.4-16.el7.x86_64.rpm'
+	run_cmd 'sudo yum install -y wget'
+	run_cmd 'wget http://rpmfind.net/linux/epel/7/x86_64/Packages/s/stress-1.0.4-16.el7.x86_64.rpm'
+	run_cmd 'sudo rpm -ivh stress-*.rpm'
 fi
 
 run_cmd 'rpm -qa | grep stress'
@@ -50,8 +50,9 @@ run_cmd "sudo turbostat stress -c $cpu_num -t 10"
 
 ## modify kernel parameter, add "intel_idle.max_cstate=1"
 ## (directly edit `/boot/grub2/grub.cfg`, since `sed -i` can't work with s-link)
-sudo sed -i 's/intel_idle.max_cstate=[0-9]*//' /boot/grub2/grub.cfg
-sudo sed -i 's/\(linux16.*\)/\1 intel_idle.max_cstate=1/' /boot/grub2/grub.cfg
+rum_cmd "cat /proc/cmdline"
+run_cmd "sudo sed -i 's/intel_idle.max_cstate=[0-9]*//' /boot/grub2/grub.cfg"
+run_cmd "sudo sed -i 's/\(linux16.*\)/\1 intel_idle.max_cstate=1/' /boot/grub2/grub.cfg"
 
 ## reboot
 run_cmd 'sleep 5s && sudo reboot&'
