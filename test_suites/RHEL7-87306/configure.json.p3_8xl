@@ -1,0 +1,9 @@
+{
+    "CASE_ID": "RHEL7-87306",
+
+    "SUBNET_ID": "subnet-43988218",
+
+    "INSTANCE_TYPE_LIST": [
+	"p3.8xlarge"
+    ]
+}
