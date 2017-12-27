@@ -1,0 +1,16 @@
+{
+    "CASE_ID": "RHEL7-87124",
+
+    "INSTANCE_TYPE_LIST": [
+	"c4.8xlarge",
+	"d2.8xlarge",
+	"i3.16xlarge",
+	"m4.10xlarge",
+	"m4.16xlarge",
+	"p2.16xlarge",
+	"r4.8xlarge",
+	"r4.16xlarge",
+	"x1.16xlarge",
+	"x1.32xlarge"
+    ]
+}

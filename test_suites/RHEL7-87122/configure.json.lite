@@ -1,0 +1,7 @@
+{
+    "CASE_ID": "RHEL7-87122",
+
+    "INSTANCE_TYPE_LIST": [
+	"i3.16xlarge"
+    ]
+}
