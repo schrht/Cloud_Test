@@ -37,8 +37,10 @@ def run_test(instance_name, instance_type=None):
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     inst_id = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-c')['id']
-    log_file = TSCFG['LOG_SAVE_PATH'] + 'aws_check_' + instance_type + '.log'
-    os.system('mkdir -p ' + TSCFG['LOG_SAVE_PATH'])
+    log_save_path = tscfg['LOG_SAVE_PATH'] + tscfg['CASE_ID'] + '/'
+    log_file = log_save_path + 'aws_check_' + instance_type + '.log'
+
+    os.system('mkdir -p ' + log_save_path)
     os.system('aws ec2 describe-instances --instance-id {0} > {1}'.format(inst_id, log_file))
     os.system('aws ec2 describe-instances --instance-id {0} --query \'Reservations[].Instances[].EnaSupport\' >> {1}'.format(inst_id, log_file))
 
