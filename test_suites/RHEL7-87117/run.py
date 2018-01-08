@@ -37,7 +37,7 @@ def run_test(instance_name, instance_type=None):
     #print 'status:\n----------\n%s\nstdout:\n----------\n%s\nstderr:\n----------\n%s\n' % (result)
 
     inst_id = get_instance_info_by_name(region=TSCFG['REGION'], instance_name=instance_name+'-c')['id']
-    log_save_path = tscfg['LOG_SAVE_PATH'] + tscfg['CASE_ID'] + '/'
+    log_save_path = TSCFG['LOG_SAVE_PATH'] + TSCFG['CASE_ID'] + '/'
     log_file = log_save_path + 'aws_check_' + instance_type + '.log'
 
     os.system('mkdir -p ' + log_save_path)
