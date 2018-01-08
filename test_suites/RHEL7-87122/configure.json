@@ -2,11 +2,6 @@
     "CASE_ID": "RHEL7-87122",
 
     "INSTANCE_TYPE_LIST": [
-        "i3.large",
-	"i3.xlarge",
-	"i3.2xlarge",
-	"i3.4xlarge",
-	"i3.8xlarge",
 	"i3.16xlarge"
     ]
 }
