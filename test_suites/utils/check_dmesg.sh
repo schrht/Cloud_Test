@@ -12,14 +12,14 @@ function remove_pattern()
 {
 	# $1 - pattern for removing
 
-	num=$(grep -c -e "$1" $logfile)
+	num=$(grep -c -e "$1" $logfile) || exit 1
 	cat $logfile | grep -v -e "$1" > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
-	#echo "> Removed $num lines by pattern: \"$1\""
+	echo "> Removed $num lines by pattern: \"$1\""
 	printf "> %4s lines were removed with pattern \"%s\"\n" "$num" "$1"
 }
 
 
-[ $# -lt 1 ] && echo "Usage: $0 <dmesg logs>" && exit 1
+[ $# -lt 1 ] && echo -e "Usage: $0 <dmesg logs> \nExample: $0 ./RHEL*/dmesg*.log" && exit 1
 
 logfile="./check_dmesg.log"
 
@@ -44,6 +44,8 @@ remove_pattern "Cannot get hvm parameter CONSOLE_EVTCHN (18)"
 echo "Remove known issues..."
 remove_pattern "tsc: Fast TSC calibration failed"
 remove_pattern "nouveau 0000:00:.*.0: unknown chipset (.*)"
+remove_pattern "nouveau 0000:00:.*.0: DRM: Pointer to TMDS table invalid"
+remove_pattern "nouveau 0000:00:.*.0: bus: MMIO read of 00000000 FAULT at.*IBUS"
 [ "$DEBUG" = "YES" ] && cat $logfile && echo
 
 echo -e "\nPlease check the results in output file: $logfile\n"
