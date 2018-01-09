@@ -12,9 +12,8 @@ function remove_pattern()
 {
 	# $1 - pattern for removing
 
-	num=$(grep -c -e "$1" $logfile) || exit 1
+	num=$(grep -c -e "$1" $logfile)
 	cat $logfile | grep -v -e "$1" > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
-	echo "> Removed $num lines by pattern: \"$1\""
 	printf "> %4s lines were removed with pattern \"%s\"\n" "$num" "$1"
 }
 
@@ -28,11 +27,14 @@ grep "dmesg -l warn" -B 1000 $@ | grep -v "dmesg -l warn" > $logfile || exit 1
 [ "$DEBUG" = "YES" ] && cat $logfile && echo
 
 echo "Remove the titles..."
-cat $logfile | grep -v -e "dmesg -l \w" | grep -v -e "------" > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
+grep -v -e "dmesg -l \w" $logfile > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
+grep -v -e "-----------" $logfile > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
 [ "$DEBUG" = "YES" ] && cat $logfile && echo
 
 echo "Remove empty lines..."
-cat $logfile | grep -v -e "-$" > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
+grep -v -e "-$" $logfile > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
+grep -v -e "^$" $logfile > ${logfile}.tmp && mv ${logfile}.tmp $logfile || exit 1
+echo "" >> $logfile	# add protecting line so that the file will never be empty
 [ "$DEBUG" = "YES" ] && cat $logfile && echo
 
 echo "Remove harmless messages..."
