@@ -16,8 +16,6 @@ if [ "$(os_type.sh)" = "redhat" ]; then
 #	sudo yum-config-manager --disable rhel7u5-debug
 
 #	cd ~/workspace/bin
-#	type lspci || sudo rpm -ivh pciutils-3.5.1-3.el7.x86_64.rpm
-#	type nvme || sudo rpm -ivh nvme-cli-1.3-1.el7.x86_64.rpm
 
 	# downgrade rdma-core from 13-7 to 13-5
 #	rpm -q rdma-core | grep rdma-core-13-7 >/dev/null 2>&1

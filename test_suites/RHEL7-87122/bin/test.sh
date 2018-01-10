@@ -22,6 +22,10 @@ function run_cmd(){
 	eval $1 >> $logfile 2>&1
 }
 
+## Put the rpm files into the current folder
+run_cmd "type lspci || sudo rpm -ivh ~/workspace/bin/pciutils-*.rpm"
+run_cmd "type nvme || sudo rpm -ivh ~/workspace/bin/nvme-cli-*.rpm"
+
 run_cmd "sudo yum install -y pciutils"
 run_cmd "sudo yum install -y nvme-cli"
 
