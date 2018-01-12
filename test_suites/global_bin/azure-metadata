@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 
-APIVERSION="2017-03-01"
+APIVERSION="2017-04-02"
 
 function print_help()
 {
@@ -56,7 +56,7 @@ function print_all()
 {
 	printf "%-20s $(uname -r)\n" "KERNEL"
 	print_group_param compute
-	print_group_param network/interface/0/ipv4/ipaddress/0
+	print_group_param network/interface/0/ipv4/ipAddress/0
 }
 
 #check if run inside an EC2 instance

@@ -14,8 +14,16 @@ else
 	disktype=unknown
 fi
 
-inst_type=$(metadata.sh -t | awk '{print $2}')
-time_stamp=$(timestamp.sh)
+result=`bash os_type.sh`
+if [ ${result} == "debian" ];then
+    inst_type=$(metadata.sh -t | awk '{print $2}')
+    inst_id=$(metadata.sh -i | awk '{print $2}')
+else
+    inst_type=$(metadata.sh -s)
+    inst_id=$(metadata.sh --local-hostname)
+fi
+
+
 logfile=~/workspace/log/storage_performance_${inst_type}_${disktype}_${time_stamp}.log
 
 # log the informaiton

@@ -17,24 +17,22 @@ if [ $? -eq 0 ]; then
 	[[ "$x" =~ "aws" ]] && echo "aws" && exit 0
 fi
 
-
 which virt-what 1> /dev/null 2> /dev/null
 if [ $? != 0 ];then
-    yum -y install virt-what 1> /dev/null 2> /dev/null
-    if [ $? != 0 ];then
-        echo "No repo enabled in YUM"
-        exit 254
+    result = `bash os_type.sh`
+    if [ ${result}x == "redhat"x ];then
+        yum -y install virt-what 1> /dev/null 2> /dev/null
+        if [ $? != 0 ];then
+            echo "No repo enabled in YUM"
+            exit 254
+        fi
+    else
+        apt-get install virt-what
     fi
 fi
 
 platform=$(virt-what | head -n 1)
 
 if [ ${platform}x == "hyperv"x ];then
-    CLOUD_PLATFORM="azure"
-elif [ ${platform}x == "xen"x ];then
-    CLOUD_PLATFORM="aws"
-else
-    echo "This can only run in Azure/AWS!"
-    exit 253
+    echo "azure"
 fi
-
