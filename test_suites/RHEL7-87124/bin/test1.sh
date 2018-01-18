@@ -50,9 +50,16 @@ run_cmd "sudo turbostat stress -c $cpu_num -t 10"
 
 ## modify kernel parameter, add "intel_idle.max_cstate=1"
 ## (directly edit `/boot/grub2/grub.cfg`, since `sed -i` can't work with s-link)
-rum_cmd "cat /proc/cmdline"
-run_cmd "sudo sed -i 's/intel_idle.max_cstate=[0-9]*//' /boot/grub2/grub.cfg"
-run_cmd "sudo sed -i 's/\(linux16.*\)/\1 intel_idle.max_cstate=1/' /boot/grub2/grub.cfg"
+grubcfg=/boot/grub2/grub.cfg
+
+# for RHEL6
+[[ "$(rpm -qa | grep --max-count=1 ^kernel-[0-9])" =~ "el6" ]] && grubcfg=/boot/grub/grub.conf
+
+run_cmd "cat /proc/cmdline"
+run_cmd "sudo cp $grubcfg ${grubcfg}.bak"
+run_cmd "sudo sed -i 's/intel_idle.max_cstate=[0-9]*//' $grubcfg"
+run_cmd "sudo sed -i 's/\(linux16.*\)/\1 intel_idle.max_cstate=1/' $grubcfg"
+run_cmd "sudo diff ${grubcfg}.bak $grubcfg"
 
 ## reboot
 run_cmd 'sleep 5s && sudo reboot&'
