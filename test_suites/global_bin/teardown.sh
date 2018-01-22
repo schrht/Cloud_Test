@@ -12,7 +12,6 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # log dmesg
 
-
 result=`bash os_type.sh`
 if [ ${result} == "debian" ];then
     inst_type=$(metadata.sh -t | awk '{print $2}')
@@ -22,8 +21,14 @@ else
     inst_id=$(metadata.sh --local-hostname)
 fi
 
+if [ "$(cloud_type.sh)" = "aws" ]; then
+	inst_type=$(metadata.sh -t | awk '{print $2}')
+	inst_id=$(metadata.sh -i | awk '{print $2}')
+fi
+
 time_stamp=$(timestamp.sh)
 logfile=~/workspace/log/dmesg_${inst_type}_${inst_id}_${time_stamp}.log
+
 if [[ "$(cat /etc/redhat-release)" = "Red Hat Enterprise Linux Server release 6."* ]]; then
 	dmesg >> $logfile
 else
