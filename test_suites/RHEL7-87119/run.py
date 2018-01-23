@@ -5,14 +5,16 @@ import sys
 import time
 import random
 import os
-import json
 
 sys.path.append('../../')
-from cloud.ec2cli import create_instance, get_instance_info_by_name
 from cloud.ec2cli import run_shell_command_on_instance
-from cloud.ec2cli import terminate_instance
 from cloud.ec2cli import upload_to_instance
 from cloud.ec2cli import download_from_instance
+from cloud.ec2cli import get_instance_info_by_name
+from cloud.ec2cli import create_placement_group
+from cloud.ec2cli import delete_placement_group
+from cloud.ec2cli import create_clustered_instances
+from cloud.ec2cli import terminate_instances
 
 from test_suites.func import load_tscfg
 from test_suites.func import prepare_on_instance
@@ -68,13 +70,17 @@ def run_test(instance_name, instance_type=None):
 def test(instance_type):
     '''test on specific instance type'''
 
-    instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + str(random.randint(10000000, 99999999))
+    uid = str(random.randint(10000000, 99999999))
+    pg_name = TSCFG['CASE_ID'].lower() + '-pg-cluster-' + uid
+    instance_name = TSCFG['CASE_ID'].lower() + '-' + instance_type + '-' + uid
+    instance_names = [instance_name + '-s', instance_name + '-c']
 
     try:
-        create_instance(region=TSCFG['REGION'], instance_name=instance_name+'-s', instance_type=instance_type,
-                        image_id = TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
-        create_instance(region=TSCFG['REGION'], instance_name=instance_name+'-c', instance_type=instance_type,
-                        image_id = TSCFG['IMAGE_ID'], subnet_id=TSCFG['SUBNET_ID'], security_group_ids=TSCFG['SECURITY_GROUP_IDS'])
+        create_placement_group(pg_name=pg_name)
+        create_clustered_instances(region=TSCFG['REGION'], pg_name=pg_name, instance_names=instance_names,
+                                   image_id=TSCFG['IMAGE_ID'], instance_type=instance_type,
+                                   security_group_ids=TSCFG['SECURITY_GROUP_IDS'], subnet_id=TSCFG['SUBNET_ID'],
+                                   ipv6_address_count = 1)
 
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-s', user_name=TSCFG['USER_NAME'])
         waiting_for_instance_online(region=TSCFG['REGION'], instance_name=instance_name+'-c', user_name=TSCFG['USER_NAME'])
@@ -88,8 +94,8 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
 
     finally:
-        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name+'-s', quick=False)
-        terminate_instance(region=TSCFG['REGION'], instance_name=instance_name+'-c', quick=False)
+        terminate_instances(region=TSCFG['REGION'], pg_name=pg_name, quick=False)
+        delete_placement_group(pg_name=pg_name)
 
     return
 
@@ -104,7 +110,8 @@ if __name__ == '__main__':
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         test(instance_type)
 
-    #run_test('cheshi-script-test', 't2.micro')
+    #test('m4.16xlarge')
+    #run_test('cheshi-network-test')
 
     print 'Job finished!'
 
