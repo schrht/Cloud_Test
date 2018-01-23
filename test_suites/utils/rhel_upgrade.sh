@@ -43,7 +43,9 @@ sudo yum update -y
 sudo yum-config-manager --disable rhel-debug
 
 # save to version.log
-echo "$(date) : $(uname -r)" | tee --append ~/version.log
+date | tee --append ~/version.log
+uname -r | tee --append ~/version.log
+echo | tee --append ~/version.log
 
 # reboot the system
 sudo reboot
