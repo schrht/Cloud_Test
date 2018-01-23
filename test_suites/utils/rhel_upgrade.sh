@@ -16,6 +16,7 @@ instname=$2
 baseurl=$3
 
 repo_file=/tmp/rhel-debug.repo
+remote_script=/tmp/do_upgrade.sh
 
 cat << EOF > $repo_file
 [rhel-debug]
@@ -26,39 +27,48 @@ gpgcheck=0
 proxy=http://127.0.0.1:8080/
 EOF
 
-echo -e "\nThe content in repo file will be:"
+cat << EOF > $remote_script
+#!/bin/bash
+
+# setup repo
+sudo mv ~/rhel-debug.repo /etc/yum.repos.d/
+
+# enable repo
+sudo yum-config-manager --enable rhel-debug
+
+# do upgrade
+sudo yum update -y
+
+# disable repo
+sudo yum-config-manager --disable rhel-debug
+
+# save to version.log
+echo "$(date) : $(uname -r)" | tee --append ~/version.log
+
+# reboot the system
+sudo reboot
+EOF
+
+# confirm the repo file content
+echo -e "\nThe content of the repo file will be:"
+echo "---------------"
 cat $repo_file
+echo "---------------"
 
-function upload()
-{
-	# $1: file/directory to be uploaded
-	# $2: remote path
+read -n 1 -p "Do you want to continue? [y/n] " answer
 
-	cmd="scp -i $pem -r $1 ec2-user@$instname:$2"
+if [ "$answer" = "y" ]; then
+	# upload files to the instance
+	scp -i $pem $repo_file $remote_script ec2-user@$instname:~
 
-	echo -e "\n\$ $cmd"
-	eval "$cmd"
-}
+	# upgrade the instance
+	ssh -R 8080:127.0.0.1:3128 -i $pem ec2-user@$instname "chmod 755 ~/do_upgrade.sh && ~/do_upgrade.sh 2>&1 | tee ~/do_upgrade.log"
+else
+	echo -e "\nAborted."
+fi
 
-function execute()
-{
-	# $1: command to be excuted
-
-	cmd="ssh -R 8080:127.0.0.1:3128 -i $pem ec2-user@$instname '$1'"
-
-	echo -e "\n\$ $cmd"
-	eval "$cmd"
-}
-
-upload $repo_file '~' || exit 1
-execute "sudo mv ~/rhel-debug.repo /etc/yum.repos.d/" || exit 1
-execute "sudo yum-config-manager --enable rhel-debug" || exit 1
-execute "sudo yum update -y" || exit 1
-execute "sudo yum-config-manager --disable rhel-debug" || exit 1
-#execute "echo '$(date) : $(uname -r)' | tee --append ~/update.log" || exit 1 # TODO: need bugfix here.
-#execute "sudo reboot" || exit 1
-
-rm -f $repo_file
+# remove the temp files
+rm -f $repo_file $remote_script
 
 exit 0
 
