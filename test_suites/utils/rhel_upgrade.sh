@@ -43,12 +43,17 @@ sudo yum update -y
 sudo yum-config-manager --disable rhel-debug
 
 # save to version.log
-date | tee --append ~/version.log
-uname -r | tee --append ~/version.log
-echo | tee --append ~/version.log
+date && uname -r && echo
+echo "\$(date) : \$(uname -r)" >> ~/version.log
 
 # reboot the system
-sudo reboot
+read -t 20 -n 1 -p "Do you want to skip the system reboot? [y/n] " answer
+if [ "\$answer" = "y" ]; then
+	echo -e "\nPlease reboot the system manually to take effect."
+else
+	sudo reboot
+fi
+
 EOF
 
 # confirm the repo file content
