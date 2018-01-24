@@ -41,6 +41,7 @@ sudo yum update -y
 
 # install specific packages
 sudo yum install -y kernel-tools
+sudo yum install -y gcc
 sudo yum install -y pciutils nvme-cli
 sudo yum install -y wget
 sudo yum install -y virt-what
@@ -56,6 +57,7 @@ echo "\$(date) : \$(uname -r)" >> ~/version.log
 # do some check
 echo "Check installed packages:"
 rpm -q kernel-tools 	|| result="failed"
+rpm -q gcc 		|| result="failed"
 rpm -q pciutils 	|| result="failed"
 rpm -q nvme-cli 	|| result="failed"
 rpm -q wget 		|| result="failed"
