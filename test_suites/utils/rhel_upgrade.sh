@@ -39,6 +39,13 @@ sudo yum-config-manager --enable rhel-debug
 # do upgrade
 sudo yum update -y
 
+# install specific packages
+sudo yum install -y kernel-tools
+sudo yum install -y pciutils nvme-cli
+sudo yum install -y wget
+sudo yum install -y virt-what
+sudo yum install -y libaio-devel
+
 # disable repo
 sudo yum-config-manager --disable rhel-debug
 
@@ -46,14 +53,32 @@ sudo yum-config-manager --disable rhel-debug
 date && uname -r && echo
 echo "\$(date) : \$(uname -r)" >> ~/version.log
 
-# reboot the system
-read -t 20 -n 1 -p "Do you want to skip the system reboot? [y/n] " answer
-if [ "\$answer" = "y" ]; then
-	echo -e "\nPlease reboot the system manually to take effect."
+# do some check
+echo "Check installed packages:"
+rpm -q kernel-tools 	|| result="failed"
+rpm -q pciutils 	|| result="failed"
+rpm -q nvme-cli 	|| result="failed"
+rpm -q wget 		|| result="failed"
+rpm -q virt-what 	|| result="failed"
+rpm -q libaio-devel 	|| result="failed"
+
+if [ "\$result" = "failed" ]; then
+	echo -e "\nCheck failed!\n"
+	exit 1
 else
+	echo -e "\nCheck passed!\n"
+fi
+
+# reboot the system
+read -t 20 -n 1 -p "Skip the system reboot for this moment? [y/n] " answer
+if [ "\$answer" = "y" ]; then
+	echo -e "\nPlease reboot the system later to take effect."
+else
+	echo -e "\nRebooting the system..."
 	sudo reboot
 fi
 
+exit 0
 EOF
 
 # confirm the repo file content
