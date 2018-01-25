@@ -23,6 +23,12 @@ else
     inst_id=$(metadata.sh --local-hostname)
 fi
 
+if [ "$(cloud_type.sh)" = "aws" ]; then
+	inst_type=$(metadata.sh -t | awk '{print $2}')
+	inst_id=$(metadata.sh -i | awk '{print $2}')
+fi
+
+time_stamp=$(timestamp.sh)
 
 logfile=~/workspace/log/storage_performance_${inst_type}_${disktype}_${time_stamp}.log
 
