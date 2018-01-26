@@ -32,12 +32,12 @@ if [[ "$PWD" =~ "RHEL7-87124" ]]; then
 	echo -e "\nCHECKPOINTS:"
 	echo -e "When \"-c 2\"   : Avg_MHz:low,  Bzy_MHz>TSC_MHz, CPU%c1:<10, CPU%c6:high"
 	echo -e "When \"-c all\" : Avg_MHz:high, Bzy_MHz>TSC_MHz, CPU%c1:low, CPU%c6:low"
-	check 'grep -e "turbostat stress" -A 6 result_1_* | grep -v "stress: info:"'
+	check 'grep -e "turbostat stress" -e "^Package.*Avg_MHz" -e "^Core.*Avg_MHz" -A 2 result_1_* | grep -v "stress: info:"'
 
 	echo -e "\nCHECKPOINTS:"
 	echo -e "First Item : Avg_MHz:low, Bzy_MHz>TSC_MHz, CPU%c1:~100%, CPU%c6:low"
 	echo -e "Second Item: Avg_MHz:low, Bzy_MHz=TSC_MHz, CPU%c1:~100%, CPU%c6:low"
-	check 'grep -e "turbostat stress" -A 6 result_2_* | grep -v "stress: info:"'
+	check 'grep -e "turbostat stress" -e "^Package.*Avg_MHz" -e "^Core.*Avg_MHz" -A 2 result_2_* | grep -v "stress: info:"'
 fi
 
 if [[ "$PWD" =~ "RHEL7-87306" ]]; then
