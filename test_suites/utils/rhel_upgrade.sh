@@ -41,6 +41,7 @@ sudo yum update -y
 
 # install specific packages
 sudo yum install -y kernel-tools
+sudo yum install -y kernel-devel
 sudo yum install -y gcc
 sudo yum install -y pciutils nvme-cli
 sudo yum install -y wget
