@@ -1,0 +1,26 @@
+[global]
+filename=/dev/sdb
+direct=1
+randrepeat=0
+ioengine=libaio
+bs=256k
+iodepth=8
+size=10G
+numjobs=32
+group_reporting
+thread
+time_based
+runtime=120
+
+[bw-randread]
+stonewall
+rw=randread
+
+[bw-randwrite]
+stonewall
+rw=randwrite
+
+#size=10G		# lead performance regression
+#numjobs=16		# lead performance regression
+#group_reporting	# lead performance regression
+
