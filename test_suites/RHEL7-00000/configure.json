@@ -1,0 +1,8 @@
+{
+	"CASE_ID": "RHEL7-00000",
+	"IMAGE_ID": "ami-1302be6b",
+
+	"INSTANCE_TYPE_LIST": [
+		"t2.micro"
+	]
+}

@@ -1,9 +1,9 @@
 {
     "CASE_ID": "RHEL7-87306",
 
-    "SUBNET_ID": "subnet-f71f2a91",
+    "SUBNET_ID": "subnet-45013d23",
     "SECURITY_GROUP_IDS": [
-        "sg-1f7efd63"
+        "sg-d0dfb8ac"
     ],
 
     "INSTANCE_TYPE_LIST": [

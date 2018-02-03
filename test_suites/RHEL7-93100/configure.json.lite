@@ -1,0 +1,30 @@
+{
+    "CASE_ID": "RHEL7-93100",
+
+    "INSTANCE_TYPE_LIST": [
+	"m3.2xlarge",
+	"g2.8xlarge",
+
+	"t2.2xlarge",
+	"m4.16xlarge",
+	"c4.8xlarge",
+	"c3.8xlarge",
+	"p2.16xlarge",
+	"r4.16xlarge",
+	"r3.8xlarge",
+	"x1.32xlarge",
+	"d2.8xlarge",
+	"i2.8xlarge",
+	"i3.16xlarge",
+
+	"c5.18xlarge",
+	"f1.16xlarge",
+	"g3.16xlarge",
+	"h1.16xlarge",
+	"m5.24xlarge",
+	"p3.16xlarge",
+	"x1e.32xlarge",
+
+	"i3.metal"
+    ]
+}

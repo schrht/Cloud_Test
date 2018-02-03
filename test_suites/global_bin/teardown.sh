@@ -13,12 +13,14 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 # log dmesg
 
 result=`bash cloud_type.sh`
-if [ ${result} == "azure" ];then
-    inst_type=$(metadata.sh -s)
-    inst_id=$(metadata.sh --local-hostname)
-else
-    inst_type=$(metadata.sh -t | awk '{print $2}')
-    inst_id=$(metadata.sh -i | awk '{print $2}')
+if [ ${result} == "azure" ]; then
+  inst_type=$(metadata.sh -s)
+  inst_id=$(metadata.sh --local-hostname)
+fi
+
+if [ "$(cloud_type.sh)" = "aws" ]; then
+	inst_type=$(metadata.sh -t | awk '{print $2}')
+	inst_id=$(metadata.sh -i | awk '{print $2}')
 fi
 
 time_stamp=$(timestamp.sh)
