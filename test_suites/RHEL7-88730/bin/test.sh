@@ -2,6 +2,13 @@
 
 # Discription:
 # $1: disk type
+# $2:At present,only Azure use $2.
+#    When $1=datadisk,$2 can only be "ssd" or "std".
+#    When $1=instance,$2 can only be "cached" or "uncached".
+#    When $1=tempdisk,$2 can only be "bw" or "iops"
+# $3:At present,only Azure use $3.
+#    When $1=datadisk or $1=instance ,$3 can be "bw" or "iops".
+#    When $1=tempdisk,$3 not in use.
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
@@ -147,7 +154,7 @@ elif [ "$mode" = "fio_script_test" ]; then
                         echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
                     fi
                 else
-                    echo "Parameter Error: Parameter can only be 'cached' or 'cached'"
+                    echo "Parameter Error: Parameter can only be 'cached' or 'uncached'"
                 fi
             elif [ "$1" == "tempdisk" ]; then
                 if [ "$2" == "iops" ]; then
