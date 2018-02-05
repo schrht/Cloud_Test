@@ -19,7 +19,7 @@ fi
 
 which virt-what 1> /dev/null 2> /dev/null
 if [ $? != 0 ];then
-    result = `bash os_type.sh`
+    result=`bash os_type.sh`
     if [ ${result}x == "redhat"x ];then
         yum -y install virt-what 1> /dev/null 2> /dev/null
         if [ $? != 0 ];then
