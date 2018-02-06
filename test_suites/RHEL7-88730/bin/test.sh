@@ -2,6 +2,13 @@
 
 # Discription:
 # $1: disk type
+# $2:At present,only Azure use $2.
+#    When $1=datadisk,$2 can only be "ssd" or "std".
+#    When $1=instance,$2 can only be "cached" or "uncached".
+#    When $1=tempdisk,$2 can only be "bw" or "iops"
+# $3:At present,only Azure use $3.
+#    When $1=datadisk or $1=instance ,$3 can be "bw" or "iops".
+#    When $1=tempdisk,$3 not in use.
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
@@ -14,13 +21,13 @@ else
 	disktype=unknown
 fi
 
-result=`bash os_type.sh`
-if [ ${result} == "debian" ];then
-    inst_type=$(metadata.sh -t | awk '{print $2}')
-    inst_id=$(metadata.sh -i | awk '{print $2}')
-else
+result=`bash cloud_type.sh`
+if [ ${result} == "azure" ];then
     inst_type=$(metadata.sh -s)
     inst_id=$(metadata.sh --local-hostname)
+else
+    inst_type=$(metadata.sh -t | awk '{print $2}')
+    inst_id=$(metadata.sh -i | awk '{print $2}')
 fi
 
 if [ "$(cloud_type.sh)" = "aws" ]; then
@@ -98,6 +105,71 @@ elif [ "$mode" = "capacity_test" ]; then
 elif [ "$mode" = "fio_script_test" ]; then
 
 	cd ~/workspace/bin
+        result=`bash cloud_type.sh`
+        if [ "$result" == "azure" ]; then
+            #if [ "$1" == "datadisk" ]
+            if [ "$1" ==  "datadisk" ]; then
+                if [ "$2" == "std" ]; then
+                    if [ "$3" == "iops" ]; then
+                        echo "azure_datadisk_std_iops.fio"
+                        fio2.sh $logfile $1 azure_datadisk_std_iops.fio
+                    elif [ "$3" == "bw" ]; then
+                        echo "azure_datadisk_std_bw.fio"
+                        fio2.sh $logfile $1 azure_datadisk_std_bw.fio
+                    else
+                        echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
+                    fi
+                elif [ "$2" == "ssd" ]; then
+                    if [ "$3" == "iops" ]; then
+                        echo "azure_datadisk_ssd_iops.fio"
+                        fio2.sh $logfile $1 azure_datadisk_ssd_iops.fio
+                    elif [ "$3" == "bw" ]; then
+                        echo "azure_datadisk_ssd_bw.fio"
+                        fio2.sh $logfile $1 azure_datadisk_ssd_bw.fio
+                    else
+                        echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
+                    fi
+                else
+                        echo "Parameter Error: Parameter can only be 'std' or 'ssd'"
+                fi
+            elif [ "$1" == "instance" ]; then
+                if [ "$2" == "uncached" ]; then
+                    if [ "$3" == "iops" ]; then
+                        echo "azure_instance_uncached_iops.fio"
+                        fio2.sh $logfile $1 azure_instance_uncached_iops.fio
+                    elif [ "$3" == "bw" ]; then
+                        echo "azure_instance_uncached_bw.fio"
+                        fio2.sh $logfile $1 azure_instance_uncached_bw.fio                 
+                    else
+                        echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
+                    fi
+                elif [ "$2" == "cached" ]; then
+                    if [ "$3" == "iops" ]; then
+                        echo "azure_instance_cached_iops.fio"
+                        fio2.sh $logfile $1 azure_instance_cached_iops.fio
+                    elif [ "$3" == "bw" ]; then
+                        echo "azure_instance_cached_bw.fio"
+                        fio2.sh $logfile $1 azure_instance_cached_bw.fio
+                    else
+                        echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
+                    fi
+                else
+                    echo "Parameter Error: Parameter can only be 'cached' or 'uncached'"
+                fi
+            elif [ "$1" == "tempdisk" ]; then
+                if [ "$2" == "iops" ]; then
+                    echo "azure_tempdisk_iops.fio"
+                    fio2.sh $logfile $1 azure_tempdisk_iops.fio
+                elif [ "$2" == "bw" ]; then
+                    echo "azure_tempdisk_bw.fio"
+                    fio2.sh $logfile $1 azure_tempdisk_bw.fio
+                else
+                    echo "Parameter Error: Parameter can only be 'bw' or 'iops'"
+                fi 
+            else
+                echo "Parameter Error: Parameter can only be 'datadisk' or 'instance' or 'tempdisk'"
+            fi
+        fi
 
 	if [ "$disktype" = "gp2" ] || [ "$disktype" = "io1" ]; then
 		# IOPS and BW performance hit

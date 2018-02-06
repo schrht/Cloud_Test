@@ -1,0 +1,26 @@
+[global]
+filename=/dev/md0
+direct=1
+randrepeat=0
+ioengine=libaio
+bs=8k
+iodepth=8
+size=10G
+numjobs=32
+group_reporting
+thread
+time_based
+runtime=60
+
+[iops-randread]
+stonewall
+rw=randread
+
+[iops-randwrite]
+stonewall
+rw=randwrite
+
+#size=10G		# lead performance regression
+#numjobs=16		# lead performance regression
+#group_reporting	# lead performance regression
+
