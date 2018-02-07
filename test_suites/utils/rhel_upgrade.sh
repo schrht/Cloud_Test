@@ -58,6 +58,7 @@ echo "\$(date) : \$(uname -r)" >> ~/version.log
 # do some check
 echo "Check installed packages:"
 rpm -q kernel-tools 	|| result="failed"
+rpm -q kernel-devel 	|| result="failed"
 rpm -q gcc 		|| result="failed"
 rpm -q pciutils 	|| result="failed"
 rpm -q nvme-cli 	|| result="failed"
