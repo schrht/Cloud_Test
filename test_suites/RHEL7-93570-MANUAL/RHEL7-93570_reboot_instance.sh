@@ -2,9 +2,9 @@
 
 set -e	# exit when error occurred
 
-host=ec2-54-213-7-113.us-west-2.compute.amazonaws.com
+host=
 pem=/home/cheshi/.pem/c5-test-cheshi.pem
-inst_id=i-06387e8de0b0ca768
+inst_id=i-0699913e427968c0b
 #log=./RHEL7-93570_reboot_instance.log
 
 function get_dns_by_instid()

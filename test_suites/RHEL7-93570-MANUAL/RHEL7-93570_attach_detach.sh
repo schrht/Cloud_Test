@@ -1,10 +1,14 @@
 #!/bin/bash
 
-#set -e	# exit when error occurred
+set -e	# exit when error occurred
 
-host=ec2-54-213-7-113.us-west-2.compute.amazonaws.com
+host=
 pem=/home/cheshi/.pem/c5-test-cheshi.pem
-inst_id=i-06387e8de0b0ca768
+#inst_id=i-071e4c7bc06e7c7d8
+#inst_id=i-0cc7d1919ebc15fd2	# cheshi-ebs-rhel74-i-0cc7d1919ebc15fd2
+#inst_id=i-071e4c7bc06e7c7d8	# cheshi-ebs-rhel75-i-071e4c7bc06e7c7d8
+#inst_id=i-059d2dc233b43ef3b	# cheshi-ebs-amzn2-i-059d2dc233b43ef3b
+inst_id=i-0699913e427968c0b	# cheshi-ebs-rhel75-latest
 vol1_id=vol-088ec5291a53df1f4
 vol2_id=vol-057e2edefb7d83d16
 vol3_id=vol-0b5656ce74a028731
@@ -35,7 +39,7 @@ function wait_volume_stat()
 
 	round=0
 	count=0
-	until [[ $count -eq 4 ]] || [[ $round -gt 30 ]]; do
+	until [[ $count -eq 4 ]] || [[ $round -gt 3000 ]]; do
                 let "round=round+1"
                 count=$(aws ec2 describe-volumes --volume-ids $vol1_id $vol2_id $vol3_id $vol4_id | grep $stat | wc -l)
                 echo "** $(date +"%Y-%m-%d %H:%M:%S") * \"$stat\" ($count of 4) **"
@@ -47,7 +51,7 @@ function wait_volume_stat()
 # Main
 get_dns_by_instid $inst_id
 
-for i in {1..2}; do
+for i in {1..20}; do
 	echo -e "\nRound times: $i"
 
 	# Attach Volume
