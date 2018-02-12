@@ -36,6 +36,9 @@ sudo mv ~/rhel-debug.repo /etc/yum.repos.d/
 # enable repo
 sudo yum-config-manager --enable rhel-debug
 
+# clean the cache
+yum clean all --disablerepo=* --enablerepo=rhel-debug
+
 # do upgrade
 sudo yum update -y
 
