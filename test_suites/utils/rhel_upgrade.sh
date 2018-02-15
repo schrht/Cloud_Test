@@ -50,6 +50,8 @@ sudo yum install -y pciutils nvme-cli
 sudo yum install -y wget
 sudo yum install -y virt-what
 sudo yum install -y libaio-devel
+sudo yum install -y cryptsetup lvm2
+
 
 # disable repo
 sudo yum-config-manager --disable rhel-debug
@@ -68,6 +70,8 @@ rpm -q nvme-cli 	|| result="failed"
 rpm -q wget 		|| result="failed"
 rpm -q virt-what 	|| result="failed"
 rpm -q libaio-devel 	|| result="failed"
+rpm -q cryptsetup	|| result="failed"
+rpm -q lvm2		|| result="failed"
 
 if [ "\$result" = "failed" ]; then
 	echo -e "\nCheck failed!\n"
