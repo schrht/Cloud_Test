@@ -38,7 +38,9 @@ echo "$0: Input parameter: $@" >> $logfile
 
 # filename should be a disk
 filename=$(get_value filename)
-if [[ "$filename" =~ "/dev/" ]] && [ -z "$(lsblk -pd | grep $filename)" ]; then
+
+#Use -b to determine whether a file is a block device
+if [ ! -b "$filename" ]; then
 	echo "$0: \"$filename\" is not a disk. Exit..." >> $logfile
 	exit 1
 fi
