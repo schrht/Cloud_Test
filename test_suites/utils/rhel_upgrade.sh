@@ -105,7 +105,7 @@ if [ "$answer" = "y" ]; then
 	scp -i $pem $repo_file $remote_script ec2-user@$instname:~
 
 	# upgrade the instance
-	ssh -R 8080:127.0.0.1:3128 -i $pem ec2-user@$instname "chmod 755 ~/do_upgrade.sh && ~/do_upgrade.sh 2>&1 | tee ~/do_upgrade.log"
+	ssh -R 8080:127.0.0.1:3128 -i $pem ec2-user@$instname -t "chmod 755 ~/do_upgrade.sh && ~/do_upgrade.sh 2>&1 | tee ~/do_upgrade.log"
 else
 	echo -e "\nAborted."
 fi
