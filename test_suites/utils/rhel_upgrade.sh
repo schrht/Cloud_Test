@@ -7,13 +7,14 @@
 # http://blog.csdn.net/sch0120/article/details/73744504
 #
 # History:
-# v1.0	2018-01-23	charles.shih	Initial version
+# v1.0	2018-01-23	charles.shih	Initial version.
 # v1.1	2018-01-24	charles.shih	Add logic to install additional packages.
 # v1.2	2018-02-01	charles.shih	Install kernel-devel RPM package during RHEL update.
 # v1.3	2018-02-07	charles.shih	bugfix for missing kernel-devel package check.
 # v1.4	2018-02-12	charles.shih	Clean cache before updating.
 # v1.5	2018-02-15	charles.shih	Install additional packages: cryptsetup and lvm2.
 # v1.6	2018-03-28	charles.shih	Allocate a tty for the connection.
+# v1.7	2018-04-14	charles.shih	Disable requiretty if applicable.
 
 if [ $# -lt 3 ]; then
 	echo -e "\nUsage: $0 <pem file> <instance ip / hostname> <the baseurl to be placed in repo file>\n"
@@ -88,6 +89,9 @@ if [ "\$result" = "failed" ]; then
 else
 	echo -e "\nCheck passed!\n"
 fi
+
+# Disable requiretty if applicable
+sudo sed -i 's/^Defaults.*requiretty/#Defaults    requiretty/' /etc/sudoers
 
 # reboot the system
 read -t 20 -n 1 -p "Skip the system reboot for this moment? [y/n] " answer
