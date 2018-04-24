@@ -91,10 +91,10 @@ def waiting_for_instance_online(region, instance_name, user_name = 'ec2-user', t
     result_code = 1
     start_time = time.time()
 
-    print 'Waiting for the instance (keep tring)...'
+    print 'Waiting for the instance (keep trying)...'
 
     while result_code != 0 and (time.time() - start_time) < time_out:
-        # tring to connect instance
+        # trying to connect instance
         time.sleep(10)
         result_code = run_instant_command_on_instance(region = region, instance_name = instance_name,
                                                  user_name = user_name, timeout = 2, command = 'echo >/dev/null')
