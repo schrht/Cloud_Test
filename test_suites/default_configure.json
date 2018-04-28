@@ -5,10 +5,10 @@
     "REGION": "us-west-2",
     "USER_NAME": "ec2-user",
 
-    "IMAGE_ID": "ami-c779dcbf",
-    "SUBNET_ID": "subnet-82efcce4",
+    "IMAGE_ID": "ami-28e07e50",
+    "SUBNET_ID": "subnet-f0e15896",
     "SECURITY_GROUP_IDS": [
-        "sg-c451f3b8"
+        "sg-33e9174e"
     ],
 
     "INSTANCE_TYPE_LIST": [
