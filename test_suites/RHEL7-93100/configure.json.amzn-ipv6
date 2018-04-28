@@ -1,5 +1,7 @@
 {
-    "CASE_ID": "RHEL7-93100",
+    "CASE_ID": "RHEL7-93100-AMZN2",
+
+    "IMAGE_ID": "ami-07eb707f",
 
     "INSTANCE_TYPE_LIST": [
 	"m3.medium",
@@ -96,3 +98,4 @@
 	"i3p.16xlarge"
     ]
 }
+

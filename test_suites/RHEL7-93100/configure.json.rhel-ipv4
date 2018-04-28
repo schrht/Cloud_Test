@@ -1,0 +1,19 @@
+{
+    "CASE_ID": "RHEL7-93100",
+
+    "_IMAGE_ID": "",
+    "SUBNET_ID": "subnet-83aff3cb",
+    "SECURITY_GROUP_IDS": [
+        "sg-d0dfb8ac"
+    ],
+
+
+    "INSTANCE_TYPE_LIST": [
+	"m3.medium",
+	"m3.large",
+	"m3.xlarge",
+	"m3.2xlarge",
+	"g2.2xlarge",
+	"g2.8xlarge"
+    ]
+}
