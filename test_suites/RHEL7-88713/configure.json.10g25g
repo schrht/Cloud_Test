@@ -31,6 +31,9 @@
 	"x1e.32xlarge",
 	"x1.32xlarge",
 	"h1.16xlarge",
-	"i3.16xlarge"
+	"i3.16xlarge",
+
+	"i3p.16xlarge"
+
     ]
 }
