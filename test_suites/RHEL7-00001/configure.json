@@ -1,0 +1,9 @@
+{
+	"CASE_ID": "RHEL7-00000",
+
+	"IMAGE_ID": "ami-8f2d61bf",
+
+	"INSTANCE_TYPE_LIST": [
+		"c3.large"
+	]
+}
