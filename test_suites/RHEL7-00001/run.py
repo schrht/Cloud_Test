@@ -59,7 +59,7 @@ def test(instance_type):
         print '----------\n', e, '\n----------'
 
     finally:
-        #terminate_instances(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
+        terminate_instances(region=TSCFG['REGION'], instance_name=instance_name, quick=False)
         pass
 
     return

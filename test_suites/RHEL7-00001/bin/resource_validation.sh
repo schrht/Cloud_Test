@@ -26,13 +26,12 @@ echo -e "\n\nTest Results:\n===============\n" >> $tmplog
 run_cmd 'lscpu'
 run_cmd 'cat /proc/cpuinfo'
 
+CPU=$(grep "^CPU(s):" $tmplog | awk '{print $2}')
+
 # nproc should equal to CPU number
 if [ "$(nproc)" != "$CPU" ]; then
 	echo "* WARNING: nproc is mismatched with CPU number!!! ($(nproc) != $CPU)" >> $tmplog
-	CPU=$(grep "^CPU(s):" $tmplog | awk '{print $2}'):$(nproc)
-else
-	echo "* PASSED: nproc is matched with CPU number. ($(nproc) = $CPU)" >> $tmplog
-	CPU=$(grep "^CPU(s):" $tmplog | awk '{print $2}')
+	CPU=$CPU:$(nproc)
 fi
 
 # Check CPU flags
