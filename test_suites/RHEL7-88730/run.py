@@ -46,8 +46,8 @@ def run_test(instance_name, instance_type=None):
 
         if volume_type == 'io1':
             # define io1 volume
-            volume_size = 400
-            iops = 20000
+            volume_size = 640
+            iops = 32000
 
         if volume_type == 'st1':
             # define st1 volume
