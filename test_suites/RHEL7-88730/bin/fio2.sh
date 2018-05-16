@@ -8,7 +8,7 @@
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 function get_value(){
-	# This function lookup and print the value from $script file
+	# This function looks up and prints the specified parameter from the fio script.
 	# Inputs:
 	#     $1: key
 	# Outputs:
@@ -20,7 +20,7 @@ function get_value(){
 
 vmsize=$(metadata.sh -t | awk '{print $2}')
 disktype=$2
-script=$3
+script=$3		# fio script
 rw=$(get_value rw)
 bs=$(get_value bs)
 iodepth=$(get_value iodepth)

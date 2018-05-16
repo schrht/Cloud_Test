@@ -21,8 +21,8 @@ else
 	disktype=unknown
 fi
 
-result=`bash cloud_type.sh`
-if [ ${result} == "azure" ];then
+cloud_type=`bash cloud_type.sh`
+if [ ${cloud_type} == "azure" ];then
     inst_type=$(metadata.sh -s)
     inst_id=$(metadata.sh --local-hostname)
 else
@@ -105,8 +105,8 @@ elif [ "$mode" = "capacity_test" ]; then
 elif [ "$mode" = "fio_script_test" ]; then
 
 	cd ~/workspace/bin
-        result=`bash cloud_type.sh`
-        if [ "$result" == "azure" ]; then
+        cloud_type=`bash cloud_type.sh`
+        if [ "$cloud_type" == "azure" ]; then
             #if [ "$1" == "datadisk" ]
             if [ "$1" ==  "datadisk" ]; then
                 if [ "$2" == "std" ]; then
@@ -169,19 +169,29 @@ elif [ "$mode" = "fio_script_test" ]; then
             else
                 echo "Parameter Error: Parameter can only be 'datadisk' or 'instance' or 'tempdisk'"
             fi
-        fi
+        fi	# End if Azure.
 
-	if [ "$disktype" = "gp2" ] || [ "$disktype" = "io1" ]; then
-		# IOPS and BW performance hit
-		fio2.sh $logfile $disktype ebs_ssd_randread.fio
-		fio2.sh $logfile $disktype ebs_ssd_randwrite.fio
-	fi
+        if [ "$cloud_type" == "aws" ]; then
 
-	if [ "$disktype" = "st1" ] || [ "$disktype" = "sc1" ]; then
-		# IOPS and BW performance hit
-		fio2.sh $logfile $disktype ebs_hdd_read.fio
-		fio2.sh $logfile $disktype ebs_hdd_write.fio
-	fi
+		# Support KVM-based instance
+		last_blk_dev=$(lsblk -d -p | grep -v NAME | cut -f 1 -d ' ' | tail -n 1)
+		if [[ $last_blk_dev =~ nvme ]]; then
+			echo -e "\nReplacing the filename with \"$last_blk_dev\" in ebs_*.fio files...\n" >> $logfile
+			sed -i "s#^filename=.*#filename=${last_blk_dev}#" ./ebs_*.fio
+		fi
+
+		if [ "$disktype" = "gp2" ] || [ "$disktype" = "io1" ]; then
+			# IOPS and BW performance hit
+			fio2.sh $logfile $disktype ebs_ssd_randread.fio
+			fio2.sh $logfile $disktype ebs_ssd_randwrite.fio
+		fi
+
+		if [ "$disktype" = "st1" ] || [ "$disktype" = "sc1" ]; then
+			# IOPS and BW performance hit
+			fio2.sh $logfile $disktype ebs_hdd_read.fio
+			fio2.sh $logfile $disktype ebs_hdd_write.fio
+		fi
+        fi	# End if AWS.
 
 elif [ "$mode" = "ebs_bandwidth_test" ]; then
 
