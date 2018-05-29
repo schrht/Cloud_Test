@@ -51,6 +51,7 @@ for i in {1..20}; do
 	echo -e "Run test on instance..."
 	get_dns_by_instid $inst_id
 	echo "InstID: $inst_id PEM: $pem UserName: ec2-user Host: $host"
+	ssh -o StrictHostKeyChecking=no -i $pem -l ec2-user $host "sudo systemctl status kdump &>/dev/null || sudo sudo kdumpctl restart"	# Workaround for kdump bug
 	ssh -o StrictHostKeyChecking=no -i $pem -l ec2-user $host "~/inner_check.sh; cat ~/inner_check.log"
 done
 
