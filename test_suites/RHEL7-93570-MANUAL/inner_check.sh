@@ -13,7 +13,7 @@ lsblk >> $log
 lsblk | grep -q xvd && volume_mode="xvd" || volume_mode="nvme"
 
 if [ "$volume_mode" = "nvme" ]; then
-	for i in {1,2,3,4}; do
+	for i in {1,2,3,4,5}; do	# Support standard volume type
 
 		# test file
 		test_file=/mnt/nvme${i}n1/test-nvme${i}n1.txt
@@ -53,10 +53,11 @@ if [ "$volume_mode" = "nvme" ]; then
 		# umount volume
 		sudo umount /dev/nvme${i}n1 && echo "Umount Success." >> $log || echo "Umount Failed." >> $log
 	done
+
 fi
 
 if [ "$volume_mode" = "xvd" ]; then
-	for i in {e,f,g,h}; do
+	for i in {f,g,h,i,j}; do		# Support standard volume type
 		sudo mount /dev/xvd$i /mnt/$i
 		sudo uptime >> /mnt/$i/time-$i.txt
 		sudo cat /mnt/$i/time-$i.txt > /mnt/$i/time-$i.test && sudo rm -f /mnt/$i/time-$i.test && echo "=====OK=====" >> $log

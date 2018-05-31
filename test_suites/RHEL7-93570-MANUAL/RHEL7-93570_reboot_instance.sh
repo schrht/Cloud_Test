@@ -4,7 +4,8 @@ set -e	# exit when error occurred
 
 host=
 pem=/home/cheshi/.pem/c5-test-cheshi.pem
-inst_id=i-0699913e427968c0b
+inst_id=i-08578083695158a9a
+
 #log=./RHEL7-93570_reboot_instance.log
 
 function get_dns_by_instid()
@@ -35,7 +36,7 @@ function wait_instance_stat()
 }
 
 
-for i in {1..20}; do
+for i in {1..200}; do
 	echo -e "\nReboot times: $i\n"
 
 	echo -e "Stopping instance..."

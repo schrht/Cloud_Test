@@ -7,9 +7,11 @@
 lsblk | grep -q xvd && volume_mode="xvd" || volume_mode="nvme"
 
 if [ "$volume_mode" = "nvme" ]; then
-	volume_list="/dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1 /dev/nvme4n1"
+	# Support standard volume type
+	volume_list="/dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1 /dev/nvme4n1 /dev/nvme5n1"
 else
-	volume_list="/dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi"
+	# Support standard volume type
+	volume_list="/dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi /dev/xvdj"
 fi
 
 # do init
