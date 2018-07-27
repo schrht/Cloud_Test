@@ -1,30 +1,42 @@
 {
-    "CASE_ID": "RHEL7-93100",
+	"CASE_ID": "RHEL7-93100",
 
-    "INSTANCE_TYPE_LIST": [
-	"m3.2xlarge",
-	"g2.8xlarge",
+	"INSTANCE_TYPE_LIST": [
+		"c1.xlarge",
+		"cc2.8xlarge",
+		"cr1.8xlarge",
+		"g2.8xlarge",
+		"m1.xlarge",
+		"m2.4xlarge",
+		"m3.2xlarge",
+		"t1.micro",
 
-	"t2.2xlarge",
-	"m4.16xlarge",
-	"c4.8xlarge",
-	"c3.8xlarge",
-	"p2.16xlarge",
-	"r4.16xlarge",
-	"r3.8xlarge",
-	"x1.32xlarge",
-	"d2.8xlarge",
-	"i2.8xlarge",
-	"i3.16xlarge",
+		"c3.8xlarge",
+		"c4.8xlarge",
+		"d2.8xlarge",
+		"f1.16xlarge",
+		"g3.16xlarge",
+		"h1.16xlarge",
+		"i2.8xlarge",
+		"i3.16xlarge",
+		"m4.16xlarge",
+		"p2.16xlarge",
+		"p3.16xlarge",
+		"r3.8xlarge",
+		"r4.16xlarge",
+		"t2.2xlarge",
+		"x1.32xlarge",
+		"x1e.32xlarge",
 
-	"c5.18xlarge",
-	"f1.16xlarge",
-	"g3.16xlarge",
-	"h1.16xlarge",
-	"m5.24xlarge",
-	"p3.16xlarge",
-	"x1e.32xlarge",
+		"c5.18xlarge",
+		"c5d.18xlarge",
+		"m5.24xlarge",
+		"m5d.24xlarge",
+		"r5.24xlarge",
+		"r5d.24xlarge",
+		"z1d.12xlarge"
 
-	"i3.metal"
-    ]
+		"i3.metal"
+
+	]
 }
