@@ -4,7 +4,9 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 inst_type=$(metadata.sh -t | awk '{print $2}')
 time_stamp=$(timestamp.sh)
-testlog=$HOME/workspace/log/sos_report_${inst_type}_${time_stamp}.log
+base=$HOME/workspace/log/sos_report_${inst_type}_${time_stamp}
+mkdir -p $base
+testlog=$base/sos_report.log
 
 # perform this test
 function run_cmd(){
@@ -28,6 +30,6 @@ echo -e "\n\nTest Results:\n===============\n" >> $testlog
 run_cmd 'sudo yum install sos -y'
 run_cmd 'sudo sosreport -a --batch'
 run_cmd 'sudo chmod 644 /var/tmp/sosreport*.tar.xz'
-run_cmd 'sudo cp $(ls -tr /var/tmp/sosreport*.tar.xz | tail -n 1) $HOME/workspace/log/'
+run_cmd 'sudo cp $(ls -tr /var/tmp/sosreport*.tar.xz | tail -n 1) $base/'
 
 exit 0
