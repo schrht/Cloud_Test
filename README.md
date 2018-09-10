@@ -1,6 +1,6 @@
 # Cloud_Test
 
-Cloud_Test is the simple test suites to perform my AWS test.
+Cloud_Test is a testing tool with very simple test suites. It can be used on AWS.
 
 # Screenshot
 
@@ -18,17 +18,17 @@ git clone https://github.com/SCHEN2015/Cloud_Test.git
 
 ## Install library
 
-ec2 script is built on top of boto and some other libraries then, first of all, install them using pip:
+ec2 script is built on top of boto/boto3 and some other libraries then, first of all, install them using pip:
 
 ```
-sudo pip install boto
+sudo pip install boto boto3
 
 #
 # If 'pip' is not installed on your machine, try with:
 # sudo easy_install pip
 #
 
-sudo pip install paramiko
+sudo pip install paramiko awscli
 
 #
 # If 'paramiko' compile failed, try with:
@@ -45,7 +45,17 @@ export PYTHONPATH=${PYTHONPATH}:$HOME/code/python/boto
 change the python version according to your own.
 ```
 
-# Edit the configuration file
+# Create AWS configuration file
+
+Once installed, you should create an AWS configuration file with credentials and default settings such as preferred region:
+
+```
+aws configure
+```
+
+This command also be used for updating AWS configurations.
+
+# Create and edit the configuration file for cloud_test
 
 Cloud_Test uses a property file in order to load default settings i.e. username, default pem file, default region, etc. Therefore, you must edit configuration file:
 
@@ -55,9 +65,6 @@ vi ~/.ec2cfg.json
 # This file should be like this:
 
 {
-    "AWS_ACCESS_KEY_ID": "AAAAAAAAAAAAAAAAAAA",
-    "AWS_SECRET_ACCESS_KEY": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-
     "DEFAULT_REGION": "us-west-2",
 
     "DEFAULT_USER_NAME": "ec2-user",
@@ -71,13 +78,58 @@ vi ~/.ec2cfg.json
 }
 ```
 
+# Update the configuration file for test cases
+
+## Configuration for all cases
+
+```
+$ cd Cloud_Test/test_suites
+$ vi default_configure.json 
+{
+    "CASE_ID": "RHEL7-00000",
+    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel76-test-outputs/",
+
+    "REGION": "us-west-2",
+    "USER_NAME": "ec2-user",
+
+    "IMAGE_ID": "ami-0301fe4c5f34e405b",
+    "SUBNET_ID": "subnet-f0e15896",
+    "SECURITY_GROUP_IDS": [
+        "sg-33e9174e"
+    ],
+
+    "INSTANCE_TYPE_LIST": [
+        "t2.micro"
+    ]
+}
+```
+
+## Configuration for a specified case (overwrite default)
+
+```
+$ cd Cloud_Test/test_suites/RHEL7-93100
+$ vi configure.json
+{
+    "CASE_ID": "RHEL7-93100",
+
+    "IMAGE_ID": "ami-0301fe4c5f34e405b",
+
+    "INSTANCE_TYPE_LIST": [
+                "r5.large",
+                "z1d.large"
+    ]
+}
+```
+
 # Usage
 
 ```
+# List all available test cases
 $ ls -d Cloud_Test/test_suites/RHEL*
 RHEL7-87117  RHEL7-87122  RHEL7-87306  RHEL7-88713
 RHEL7-87119  RHEL7-87124  RHEL7-87311  RHEL7-93100
 
+# Do some configuration
 $ cd Cloud_Test/test_suites/RHEL7-88713
 $ vi configure.json
 ......
@@ -86,13 +138,10 @@ $ ./run.py
 ......
 ```
 
-# Example
+# Check results
 
 ```
-$ Cloud_Test/test_suites/RHEL7-88713/run.py
-......
-
-$ ./test_suites/utils/summary.sh path_to_log/RHEL7-88713/
+$ ./test_suites/utils/summary.sh /home/cheshi/workspace/rhel76-test-outputs/RHEL7-88713/
 ** VMSize       DiskType   I/OMode    BS     IODepth   Format    BW(KB/s)     IOPS
 ** m4.16xlarge  st1        write      1024k  1         raw       544608       531
 ** m4.16xlarge  st1        read       1024k  1         raw       551688       538
@@ -106,4 +155,4 @@ $ ./test_suites/utils/summary.sh path_to_log/RHEL7-88713/
 ** m4.16xlarge  gp2        randwrite  16k    1         raw       164945       10309
 ** m4.16xlarge  gp2        randread   256k   1         raw       169929       663
 ** m4.16xlarge  gp2        randread   16k    1         raw       165946       10371
-
+```
