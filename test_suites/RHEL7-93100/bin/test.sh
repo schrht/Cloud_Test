@@ -13,6 +13,8 @@ test_resource_information.sh $label
 
 vm_check.sh
 sos_report.sh
+get_metadata.sh
+
 
 # teardown
 teardown.sh
