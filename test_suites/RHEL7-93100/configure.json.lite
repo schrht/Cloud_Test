@@ -34,7 +34,8 @@
 		"m5d.24xlarge",
 		"r5.24xlarge",
 		"r5d.24xlarge",
-		"z1d.12xlarge"
+		"z1d.12xlarge",
+		"t3.2xlarge"
 
 		"i3.metal"
 
