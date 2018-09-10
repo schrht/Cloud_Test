@@ -63,10 +63,7 @@ def get_connection(region = None):
         region = EC2CFG['DEFAULT_REGION']
 
     if isinstance(region, str):
-        conn = boto.ec2.connect_to_region(
-            region,
-            aws_access_key_id=EC2CFG['AWS_ACCESS_KEY_ID'],
-            aws_secret_access_key=EC2CFG['AWS_SECRET_ACCESS_KEY'])
+        conn = boto.ec2.connect_to_region(region)
 
     if conn is None:
         sys.stderr.write("ERROR: Connect to region \"%s\" failed.\n" % (region))
