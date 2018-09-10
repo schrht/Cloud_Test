@@ -20,7 +20,7 @@ from botocore.exceptions import WaiterError
 def load_ec2cfg():
     '''load ec2 configuration'''
 
-    EC2CFG_JSON_FILE = '/home/cheshi/.ec2cfg.json'
+    EC2CFG_JSON_FILE = os.path.expanduser('~/.ec2cfg.json')
 
     def byteify(inputs):
         '''Convert unicode to string for JSON.loads'''
@@ -36,13 +36,11 @@ def load_ec2cfg():
 
     if not os.path.exists(EC2CFG_JSON_FILE):
         default_ec2cfg = {}
-        default_ec2cfg['DEFAULT_REGION']='ap-northeast-1'
-        default_ec2cfg['AWS_ACCESS_KEY_ID'] = 'AAAAAAAAAAAAAAAAAAAA'
-        default_ec2cfg['AWS_SECRET_ACCESS_KEY'] = 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
+        default_ec2cfg['DEFAULT_REGION']='us-west-2'
         default_ec2cfg['SECONDARY_VOLUME_DEVICE'] = '/dev/xvdf'
         default_ec2cfg['PEM'] = {}
-        default_ec2cfg['PEM']['ap-northeast-1'] = '/home/cheshi/.pem/ap-northeast-1-cheshi.pem'
-        default_ec2cfg['PEM']['ap-us-east-1'] = '/home/cheshi/.pem/ap-us-east-1-cheshi.pem'
+        default_ec2cfg['PEM']['us-east-1'] = '/home/cheshi/.pem/us-east-1-cheshi.pem'
+        default_ec2cfg['PEM']['us-west-2'] = '/home/cheshi/.pem/us-west-2-cheshi.pem'
         default_ec2cfg['DEFAULT_USER_NAME'] = 'ec2-user'
 
         os.mknod(EC2CFG_JSON_FILE)
