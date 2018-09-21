@@ -1,8 +1,23 @@
 #!/bin/bash
 
+# History:
+# v1.0  2018-06-26  charles.shih  init version
+# v1.1  2018-09-21  charles.shih  Add description in help message
 
 if [ "$#" -lt 1 ]; then
-	echo -e "\nUsage: $0 <RHEL7-87306 logs>\n"
+	echo -e "\nUsage:"
+	echo -e "$0 <RHEL7-87306/93100 log files>"
+	echo -e "\nDescription:"
+	echo -e "It will analyse the Linux vendor from log and \
+create './check_cpu_flags.report' which contains the reports."
+	echo -e "\nExample:"
+	echo -e "$0 \$(find ./ -type f -name 'resource_validation_*.log')"
+	echo -e "\nUseful commands:"
+	echo -e "cd ./check_cpu_flags.report"
+	echo -e "diff amzn2 rhel7 | grep -i -w only"
+	echo -e "diff amzn2 rhel7 | grep \"<\" | sort -u"
+	echo -e "diff amzn2 rhel7 | grep \">\" | sort -u"
+
 	exit 1
 else
 	files=$@
