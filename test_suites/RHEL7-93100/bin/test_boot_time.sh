@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# History:
+# v2.0  2018-09-25  charles.shih  Convert time to seconds
+
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 # setup
@@ -30,6 +33,7 @@ while [[ "$(sudo systemd-analyze time 2>&1)" =~ "Bootup is not yet finished" ]];
 done
 
 run_cmd 'rpm -qa | grep kexec'
+run_cmd 'rpm -qa | grep cloud-init'
 run_cmd 'rpm -qa | grep rh-amazon-rhui-client'
 
 run_cmd 'sudo systemd-analyze time'
@@ -42,7 +46,7 @@ line=$(grep "Startup finished in" $logfile | head -1 | sed 's/min /min/g')
 
 if [[ "$line" =~ "(initrd)" ]]; then
 	# TARGET: "Startup finished in 1.890s (kernel) + 950ms (initrd) + 3.456s (userspace) = 6.296s"
-	# TARGET: "Startup finished in 2.333s (kernel) + 3.913s (initrd) + 1min 18.659s (userspace) = 1min 24.905s"
+	# TARGET: "Startup finished in 2.333s (kernel) + 3.913s (initrd) + 1min18.659s (userspace) = 1min24.905s"
 	kernel=$(echo $line | awk '{print $4}')
 	initrd=$(echo $line | awk '{print $7}')
 	userspace=$(echo $line | awk '{print $10}')
@@ -54,6 +58,43 @@ else
 	userspace=$(echo $line | awk '{print $7}')
 	total=$(echo $line | awk '{print $10}')
 fi
+
+# Convert time to seconds
+function convert2sec() {
+	# $@ : the STRING in time format
+	#      1min54s
+	#      1min245ms
+	# Description:
+	#      It takes a time STRING, convert and echo as a value in seconds
+
+        [[ "$@" != [0-9]* ]] && echo "$@" && return
+
+	remaining="$@"
+
+	echo $remaining | tr -c "[:alpha:]" " " | grep -q -i -w min
+	if [ $? = 0 ]; then
+		mstr=${remaining%%min*}
+		remaining=${remaining#*min}
+	fi
+
+	echo $remaining | tr -c "[:alpha:]" " " | grep -q -i -w s
+	if [ $? = 0 ]; then
+		sstr=${remaining%%s*}
+		remaining=${remaining#*s}
+	fi
+
+	echo $remaining | tr -c "[:alpha:]" " " | grep -q -i -w ms
+	if [ $? = 0 ]; then
+		msstr=${remaining%%ms*}
+	fi
+
+	echo ${mstr:=0} ${sstr:=0} ${msstr:=0} | awk '{print $1*60+$2+$3/1000}'
+}
+
+kernel=$(convert2sec kernel)
+initrd=$(convert2sec initrd)
+userspace=$(convert2sec userspace)
+total=$(convert2sec total)
 
 # Write down a summary
 echo -e "\nTest Summary: \n----------\n" >> $logfile
