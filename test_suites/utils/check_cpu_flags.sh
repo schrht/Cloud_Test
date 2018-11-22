@@ -3,6 +3,7 @@
 # History:
 # v1.0  2018-06-26  charles.shih  init version
 # v1.1  2018-09-21  charles.shih  Add description in help message
+# v1.2  2018-11-22  charles.shih  Add RHEL8 support
 
 if [ "$#" -lt 1 ]; then
 	echo -e "\nUsage:"
@@ -28,6 +29,7 @@ do
 	# get system
 	line=$(grep -m 1 "uname -a" -A 2 $file | tail -n 1)
 	[[ "$line" =~ "el7" ]] && system="rhel7"
+	[[ "$line" =~ "el8" ]] && system="rhel8"
 	[[ "$line" =~ "amzn2" ]] && system="amzn2"
 
 	# get instance type
