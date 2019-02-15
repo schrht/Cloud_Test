@@ -4,6 +4,7 @@
 # v1.0  2018-06-26  charles.shih  init version
 # v1.1  2018-09-21  charles.shih  Add description in help message
 # v1.2  2018-11-22  charles.shih  Add RHEL8 support
+# v1.3  2019-02-15  charles.shih  Add instruction to make the report more feasible
 
 if [ "$#" -lt 1 ]; then
 	echo -e "\nUsage:"
@@ -18,6 +19,8 @@ create './check_cpu_flags.report' which contains the reports."
 	echo -e "diff amzn2 rhel7 | grep -i -w only"
 	echo -e "diff amzn2 rhel7 | grep \"<\" | sort -u"
 	echo -e "diff amzn2 rhel7 | grep \">\" | sort -u"
+	echo -e "diff -y --suppress-common-lines amzn2 rhel7 | tee \
+cpuflag_report.txt"
 
 	exit 1
 else
