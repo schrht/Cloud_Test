@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # History:
-# v2.0  2018-09-25  charles.shih  Convert time to seconds
+# v1.0.0  2017-08-07  charles.shih  Init version
+# v2.0.0  2018-09-25  charles.shih  Convert time to seconds
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
