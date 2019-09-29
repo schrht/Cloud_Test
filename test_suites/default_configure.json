@@ -1,14 +1,14 @@
 {
     "CASE_ID": "RHEL7-00000",
-    "LOG_SAVE_PATH": "/home/cheshi/workspace/rhel75-test-outputs/",
+    "LOG_SAVE_PATH": "/data/cloud_test_outputs/",
 
     "REGION": "us-west-2",
     "USER_NAME": "ec2-user",
 
-    "IMAGE_ID": "ami-28e07e50",
-    "SUBNET_ID": "subnet-f0e15896",
+    "IMAGE_ID": "ami-036affea69a1101c9",
+    "SUBNET_ID": "subnet-053b9b292581670a9",
     "SECURITY_GROUP_IDS": [
-        "sg-33e9174e"
+        "sg-0c39511f8dd47e65c"
     ],
 
     "INSTANCE_TYPE_LIST": [

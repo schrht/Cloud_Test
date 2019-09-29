@@ -1,7 +1,9 @@
 {
-    "CASE_ID": "RHEL7-88730",
+    "CASE_ID": "RHEL8-88730.new",
+
+    "IMAGE_ID": "ami-0561309297cd132ca",
 
     "INSTANCE_TYPE_LIST": [
-	"m4.16xlarge"
+	"r5.24xlarge"
     ]
 }

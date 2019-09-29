@@ -141,9 +141,30 @@
 		"t3.medium",
 		"t3.large",
 		"t3.xlarge",
-		"t3.2xlarge"
+		"t3.2xlarge",
+
+		"m5a.large",
+		"m5a.xlarge",
+		"m5a.2xlarge",
+		"m5a.4xlarge",
+		"m5a.12xlarge",
+		"m5a.24xlarge",
+		"r5a.large",
+		"r5a.xlarge",
+		"r5a.2xlarge",
+		"r5a.4xlarge",
+		"r5a.12xlarge",
+		"r5a.24xlarge",
+		"t3a.nano",
+		"t3a.micro",
+		"t3a.small",
+		"t3a.medium",
+		"t3a.large",
+		"t3a.xlarge",
+		"t3a.2xlarge",
 
 		"i3.metal"
 
 	]
 }
+

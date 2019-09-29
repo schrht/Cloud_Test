@@ -1,9 +1,9 @@
 {
 	"CASE_ID": "RHEL7-93100",
 
-	"SUBNET_ID": "subnet-83aff3cb",
+	"SUBNET_ID": "subnet-09382d8ab2390b80b",
 	"SECURITY_GROUP_IDS": [
-		"sg-d0dfb8ac"
+		"sg-0e2123ad988c12e86"
 	],
 
 	"INSTANCE_TYPE_LIST": [
