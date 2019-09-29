@@ -42,12 +42,12 @@ def run_test(instance_name, instance_type=None):
 
         if volume_type == 'gp2':
             # define gp2 volume
-            volume_size = 3334
+            volume_size = 5334
 
         if volume_type == 'io1':
             # define io1 volume
-            volume_size = 640
-            iops = 32000
+            volume_size = 1280
+            iops = 64000
 
         if volume_type == 'st1':
             # define st1 volume
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     for instance_type in TSCFG['INSTANCE_TYPE_LIST']:
         test(instance_type)
 
-    #run_test('cheshi-storage-test')
+    #run_test('rhel8-88730.new-m4.xlarge-55213470')
 
     print 'Job finished!'
 
