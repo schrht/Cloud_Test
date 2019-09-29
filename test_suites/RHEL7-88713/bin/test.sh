@@ -5,6 +5,12 @@
 # $1: role; "client" or "server"
 # $2: the ipv4 address of mated system
 # $3: the ipv6 address of mated system (optional)
+#
+# History:
+# v1.0  2017-07-13  charles.shih  Init version
+# v1.1  2017-09-05  charles.shih  Add workaround to enable IPv6 on RHEL
+# v1.2  2018-11-15  charles.shih  Remove the workaround to enable IPv6 on RHEL
+
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
@@ -46,10 +52,11 @@ function run_cmd(){
 echo -e "\nSetup iperf3...\n" >> $logfile
 setup_iperf3.sh 2>> $logfile
 
-if [ "$(os_type.sh)" = "redhat" ]; then
-	echo -e "\nEnable IPv6 on RHEL system...\n" >> $logfile
-	enable_ipv6_on_rhel.sh &>> $logfile
-fi
+# Add workaround to enable IPv6 on RHEL
+#if [ "$(os_type.sh)" = "redhat" ]; then
+#	echo -e "\nEnable IPv6 on RHEL system...\n" >> $logfile
+#	enable_ipv6_on_rhel.sh &>> $logfile
+#fi
 
 echo -e "\n\nTest Results:\n===============\n" >> $logfile
 

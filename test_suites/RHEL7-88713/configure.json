@@ -1,0 +1,13 @@
+{
+    "CASE_ID": "RHEL8-88713.new",
+
+    "IMAGE_ID": "ami-0e21742be2fb40e7c",
+
+    "INSTANCE_TYPE_LIST": [
+        "c3.8xlarge",
+        "c4.8xlarge",
+        "c5d.18xlarge",
+        "c5d.9xlarge",
+        "d2.8xlarge"
+    ]
+}
