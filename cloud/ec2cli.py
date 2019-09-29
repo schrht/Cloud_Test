@@ -71,12 +71,16 @@ def get_connection(region = None):
     return conn
 
 
-def create_instance(region = None, instance_name = 'cheshi-test1',
+def create_instance(region = None, instance_name = 'cheshi-cloud-test',
                     image_id = 'ami-4806342f', instance_type = 't2.micro',
-                    key_name = 'cheshi', security_group_ids = ['launch-wizard-41'],
+                    key_name = '', security_group_ids = ['launch-wizard-41'],
                     subnet_id = None, private_ip_address = None,
                     volume_delete_on_termination = True):
     '''Create an EC2 instance.'''
+
+    # Parse the parameters
+    if not key_name:
+        key_name = EC2CFG['KEY_NAME']
 
     # connect to region
     conn = get_connection(region)
@@ -453,7 +457,7 @@ def delete_placement_group(pg_name):
 
 
 def create_instances(region = None, instance_names = [], pg_name = '', image_id = '',
-                     instance_type = '', key_name = 'cheshi', security_group_ids = [],
+                     instance_type = '', key_name = '', security_group_ids = [],
                      subnet_id = None, ipv6_address_count = 0, ebs_optimized = None,
                      min_count = 1, max_count = 1):
     '''Create EC2 instance.
@@ -475,6 +479,9 @@ def create_instances(region = None, instance_names = [], pg_name = '', image_id 
     if len(instance_names) != max_count:
         print 'Invalid Inputs: parameter "instance_names" provided {0} name(s), however "max_count" ({1}) name(s) are required.'.format(len(instance_names), max_count)
         return False
+
+    if not key_name:
+        key_name = EC2CFG['KEY_NAME']
 
     # connect to resource
     ec2 = boto3.resource('ec2')
