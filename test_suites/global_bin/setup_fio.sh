@@ -7,25 +7,33 @@ PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
 die() { echo "$@"; exit 1; }
 
-cd ~/workspace
+cd ~/workspace/bin
 
 type fio &>/dev/null && echo "Fio already Installed." && exit 0
 
 result=`bash os_type.sh`
 if [ "${result}" = "redhat" ]; then	# Install on RHEL6+
 
-	# Prepare installation
-	sudo yum install -y wget gcc
-	sudo yum install -y libaio-devel	# For libaio support
 
-	# Download the tarball
-	wget https://github.com/axboe/fio/archive/fio-3.3.tar.gz || die "Fail to download tarball."
+	if [ "el7" = "el8" ]; then
+		# Prepare installation
+		sudo yum localinstall -y libaio-0.3.110-12.el8.x86_64.rpm
+		sudo yum localinstall -y libaio-devel-0.3.110-12.el8.x86_64.rpm
+		sudo yum localinstall -y fio-3.7-3.el8.x86_64.rpm
+	else
+		# Prepare installation
+		sudo yum install -y gcc wget make
+		sudo yum install -y libaio-devel	# For libaio support
+
+		# Download the tarball
+		wget https://github.com/axboe/fio/archive/fio-3.3.tar.gz || die "Fail to download tarball."
 	
-	# Install
-	tar -xvf ./fio*.tar.gz && cd ./fio-fio* || die "Fail to deal with the tarball"
-	./configure || die "Fail to run ./configure"
-	make || die "Fail to run 'make'"
-	sudo make install || die "Fail to run 'make install'"
+		# Install
+		tar -xvf ./fio*.tar.gz && cd ./fio-fio* || die "Fail to deal with the tarball"
+		./configure || die "Fail to run ./configure"
+		make || die "Fail to run 'make'"
+		sudo make install || die "Fail to run 'make install'"
+	fi
 
 	# Ensure fio can be run by sudo command
 	sudo fio --version &>/dev/null || sudo ln -s /usr/local/bin/*fio* /usr/bin/
