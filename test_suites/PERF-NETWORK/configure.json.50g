@@ -1,0 +1,11 @@
+{
+    "CASE_ID": "PERF-NETWORK",
+
+    "INSTANCE_TYPE_LIST": [
+        "c5n.9xlarge",
+        "g4dn.12xlarge",
+        "g4dn.16xlarge",
+        "g4dn.8xlarge",
+        "i3en.12xlarge"
+    ]
+}

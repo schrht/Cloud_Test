@@ -1,0 +1,7 @@
+{
+    "CASE_ID": "PERF-NETWORK",
+
+    "INSTANCE_TYPE_LIST": [
+        "i3.metal"
+    ]
+}
