@@ -5,7 +5,7 @@
     "REGION": "us-west-2",
     "USER_NAME": "ec2-user",
 
-    "IMAGE_ID": "ami-036affea69a1101c9",
+    "IMAGE_ID": "ami-078a6a18fb73909b2",
     "SUBNET_ID": "subnet-053b9b292581670a9",
     "SECURITY_GROUP_IDS": [
         "sg-0c39511f8dd47e65c"
