@@ -41,12 +41,13 @@ tlog=$(mktemp)
 logfile=$1
 
 # start test
+echo -e "Multiple Tasks START: $(date)" >> $tlog
 for pn in $(seq $pnum); do
 	sub_tlog="${tlog}-${pn}"
 	echo -e "\nProcess $pn\n--------------------\n" >> $sub_tlog
 
 	# Set Command
-	cmd="sudo iperf3 -c $ipaddr -p $((10080+$pn)) -l $len -P $pc -t $time -f m"
+	cmd="date && sudo iperf3 -c $ipaddr -p $((10080+$pn)) -l $len -P $pc -t $time -f m && date"
 
 	# Run test
 	echo -e "\n$ $cmd" >> $sub_tlog
@@ -54,10 +55,11 @@ for pn in $(seq $pnum); do
 done
 
 # Wait test finish
-sleep $(($time+10))
+wait
+echo -e "Multiple Tasks FINISH: $(date)" >> $tlog
 
 # Collect log
-cat ${tlog}-* > $tlog && rm ${tlog}-*
+cat ${tlog}-* >> $tlog && rm ${tlog}-*
 
 # Get the BW
 
