@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Description:
-# Trigger iperf3 for network performance test.
+# Trigger iperf for network performance test.
 # $1: role; "client" or "server"
 # $2: the ipv4 address of mated system
 # $3: the ipv6 address of mated system (optional)
@@ -49,8 +49,9 @@ function run_cmd(){
 	eval $1 >> $logfile 2>&1
 }
 
-echo -e "\nSetup iperf3...\n" >> $logfile
+echo -e "\nSetup iperf...\n" >> $logfile
 setup_iperf3.sh 2>> $logfile
+setup_iperf2.sh 2>> $logfile
 
 # Add workaround to enable IPv6 on RHEL
 #if [ "$(os_type.sh)" = "redhat" ]; then
@@ -95,17 +96,20 @@ if [ "$label" = "server" ]; then
 
 	echo -e "\nStart server:\n--------------------" >> $logfile
 	iperf3_server.sh $logfile 32
+	iperf2_server.sh $logfile 32
 
 	# exit without teardown
 	exit 0
 else
 	# iperf test on client
 
-	# Usage: iperf3_client.sh <logfile> <driver> <process> <ip> <protocol> <buffer> <pclient> <time>
+	# Usage: iperf_client.sh <logfile> <driver> <process> <ip> <protocol> <buffer> <pclient> <time>
 	iperf3_client.sh $logfile $driver 8 $ip tcp 128k 32 60
+	iperf2_client.sh $logfile $driver 1 $ip tcp 128k 32 60
 
 	if [ ! -z "$ipv6" ]; then
 		iperf3_client.sh $logfile $driver 8 ${ipv6} tcp 128k 32 60
+		iperf2_client.sh $logfile $driver 1 ${ipv6} tcp 128k 32 60
 	fi
 
 	# check the statistics again
