@@ -41,6 +41,7 @@ tlog=$(mktemp)
 logfile=$1
 
 # start test
+echo -e "\n\nIPERF3 TEST BLOCK" >> $tlog
 echo -e "Multiple Tasks START: $(date)" >> $tlog
 for pn in $(seq $pnum); do
 	sub_tlog="${tlog}-${pn}"
