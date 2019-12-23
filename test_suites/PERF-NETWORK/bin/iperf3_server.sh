@@ -19,12 +19,12 @@ tlog=$(mktemp)
 logfile=$1
 
 # stop previous server
-#sudo kill $(pidof iperf3)
+sudo killall iperf3
 
 # start server
 for pn in $(seq $process_number); do
 	echo "Start iperf3 server, listen on port $((10080+$pn));" >> $tlog
-	iperf3 -s -p $((10080+$pn)) -D &>> $tlog
+	sudo iperf3 -s -p $((10080+$pn)) -D &>> $tlog
 done
 
 # Save log
