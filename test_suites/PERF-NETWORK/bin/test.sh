@@ -94,18 +94,18 @@ if [ "$label" = "server" ]; then
 	# start server
 
 	echo -e "\nStart server:\n--------------------" >> $logfile
-	iperf_server.sh $logfile 32
+	iperf3_server.sh $logfile 32
 
 	# exit without teardown
 	exit 0
 else
 	# iperf test on client
 
-	# Usage: iperf_client.sh <logfile> <driver> <process> <ip> <protocol> <buffer> <pclient> <time>
-	iperf_client.sh $logfile $driver 8 $ip tcp 128k 32 60
+	# Usage: iperf3_client.sh <logfile> <driver> <process> <ip> <protocol> <buffer> <pclient> <time>
+	iperf3_client.sh $logfile $driver 8 $ip tcp 128k 32 60
 
 	if [ ! -z "$ipv6" ]; then
-		iperf_client.sh $logfile $driver 8 ${ipv6} tcp 128k 32 60
+		iperf3_client.sh $logfile $driver 8 ${ipv6} tcp 128k 32 60
 	fi
 
 	# check the statistics again
