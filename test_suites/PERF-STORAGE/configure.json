@@ -1,0 +1,7 @@
+{
+    "CASE_ID": "PERF-EBS",
+
+    "INSTANCE_TYPE_LIST": [
+	"i3.metal"
+    ]
+}
