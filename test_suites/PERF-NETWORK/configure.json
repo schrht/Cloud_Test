@@ -1,7 +1,10 @@
 {
-    "CASE_ID": "PERF-NETWORK",
+    "CASE_ID": "PERF-NETWORK.AMZN2",
+
+    "IMAGE_ID": "ami-04b762b4289fba92b",
 
     "INSTANCE_TYPE_LIST": [
-        "i3.metal"
+        "r5a.24xlarge"
     ]
 }
+

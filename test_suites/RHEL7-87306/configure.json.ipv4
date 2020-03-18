@@ -3,7 +3,7 @@
 
     "SUBNET_ID": "subnet-45013d23",
     "SECURITY_GROUP_IDS": [
-        "sg-d0dfb8ac"
+        "sg-0e2123ad988c12e86"
     ],
 
     "INSTANCE_TYPE_LIST": [
