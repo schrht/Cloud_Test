@@ -2,6 +2,9 @@
 
 # Description:
 # This script is used to ensure iperf3 is available.
+#
+# https://iperf.fr/iperf-download.php#fedora
+#
 
 PATH=~/workspace/bin:/usr/sbin:/usr/local/bin:$PATH
 
